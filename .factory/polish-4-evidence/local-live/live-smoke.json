@@ -1,0 +1,146 @@
+{
+  "base": "http://127.0.0.1:4173",
+  "checkout": {
+    "status": 303,
+    "hostedCheckout": true
+  },
+  "consoleErrors": [],
+  "externalRequests": [],
+  "axe": [
+    {
+      "width": 1280,
+      "colorScheme": "light",
+      "path": "/",
+      "seriousOrCritical": 0
+    },
+    {
+      "width": 1280,
+      "colorScheme": "light",
+      "path": "/demo",
+      "seriousOrCritical": 0
+    },
+    {
+      "width": 1280,
+      "colorScheme": "light",
+      "path": "/privacy",
+      "seriousOrCritical": 0
+    },
+    {
+      "width": 1280,
+      "colorScheme": "light",
+      "path": "/terms",
+      "seriousOrCritical": 0
+    },
+    {
+      "width": 1280,
+      "colorScheme": "light",
+      "path": "/404",
+      "seriousOrCritical": 0
+    },
+    {
+      "width": 1280,
+      "colorScheme": "dark",
+      "path": "/",
+      "seriousOrCritical": 0
+    },
+    {
+      "width": 1280,
+      "colorScheme": "dark",
+      "path": "/demo",
+      "seriousOrCritical": 0
+    },
+    {
+      "width": 1280,
+      "colorScheme": "dark",
+      "path": "/privacy",
+      "seriousOrCritical": 0
+    },
+    {
+      "width": 1280,
+      "colorScheme": "dark",
+      "path": "/terms",
+      "seriousOrCritical": 0
+    },
+    {
+      "width": 1280,
+      "colorScheme": "dark",
+      "path": "/404",
+      "seriousOrCritical": 0
+    },
+    {
+      "width": 390,
+      "colorScheme": "light",
+      "path": "/",
+      "seriousOrCritical": 0
+    },
+    {
+      "width": 390,
+      "colorScheme": "light",
+      "path": "/demo",
+      "seriousOrCritical": 0
+    },
+    {
+      "width": 390,
+      "colorScheme": "light",
+      "path": "/privacy",
+      "seriousOrCritical": 0
+    },
+    {
+      "width": 390,
+      "colorScheme": "light",
+      "path": "/terms",
+      "seriousOrCritical": 0
+    },
+    {
+      "width": 390,
+      "colorScheme": "light",
+      "path": "/404",
+      "seriousOrCritical": 0
+    },
+    {
+      "width": 390,
+      "colorScheme": "dark",
+      "path": "/",
+      "seriousOrCritical": 0
+    },
+    {
+      "width": 390,
+      "colorScheme": "dark",
+      "path": "/demo",
+      "seriousOrCritical": 0
+    },
+    {
+      "width": 390,
+      "colorScheme": "dark",
+      "path": "/privacy",
+      "seriousOrCritical": 0
+    },
+    {
+      "width": 390,
+      "colorScheme": "dark",
+      "path": "/terms",
+      "seriousOrCritical": 0
+    },
+    {
+      "width": 390,
+      "colorScheme": "dark",
+      "path": "/404",
+      "seriousOrCritical": 0
+    }
+  ],
+  "touchTargets": {
+    "Reset demo": 44,
+    "Start for real": 44,
+    "footer-Privacy": {
+      "width": 45.078125,
+      "height": 44
+    },
+    "footer-Terms": {
+      "width": 44,
+      "height": 44
+    }
+  },
+  "offline": true,
+  "keyboard": true,
+  "overflow": 0
+}

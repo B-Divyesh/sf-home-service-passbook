@@ -1,0 +1,105 @@
+{
+  "base": "https://home-service-passbook.sociobot.in",
+  "consoleErrors": [],
+  "externalRequests": [],
+  "demo": {
+    "url": "https://home-service-passbook.sociobot.in/?demo=1",
+    "title": "Demo — Home Service Passbook",
+    "banner": "Demo — sample data. Nothing saves to your passbook.\nReset demo\nStart for real",
+    "text": "SAMPLE RECORD\n\nOVERDUE\nReplace air filter\n\nFurnace · Utility room\n\nDUE\nAug 14, 2026\nLAST PROOF\nPack 2 of 4",
+    "box": {
+      "x": 17,
+      "y": 336,
+      "width": 356,
+      "height": 200.515625
+    },
+    "bottom": 536.515625,
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390
+    }
+  },
+  "isolation": {
+    "realAssetVisible": true,
+    "sampleAssetRows": 0
+  },
+  "routes": [
+    {
+      "path": "/",
+      "status": 200,
+      "title": "Home Service Passbook — Track home maintenance",
+      "titleMatches": true,
+      "canonical": "https://home-service-passbook.sociobot.in/",
+      "description": "Track recurring home care and keep service proof in one private, offline passbook.",
+      "h1": 1,
+      "main": 1
+    },
+    {
+      "path": "/demo",
+      "status": 200,
+      "title": "Demo — Home Service Passbook",
+      "titleMatches": true,
+      "canonical": "https://home-service-passbook.sociobot.in/demo",
+      "description": "Try a filled Home Service Passbook with isolated sample records.",
+      "h1": 1,
+      "main": 1
+    },
+    {
+      "path": "/app",
+      "status": 200,
+      "title": "Your passbook — Home Service Passbook",
+      "titleMatches": true,
+      "canonical": "https://home-service-passbook.sociobot.in/app",
+      "description": "View due home service jobs and record completed work in your private passbook.",
+      "h1": 1,
+      "main": 1
+    },
+    {
+      "path": "/history",
+      "status": 200,
+      "title": "Service history — Home Service Passbook",
+      "titleMatches": true,
+      "canonical": "https://home-service-passbook.sociobot.in/history",
+      "description": "Review and print the service entries saved in this browser.",
+      "h1": 1,
+      "main": 1
+    },
+    {
+      "path": "/backup",
+      "status": 200,
+      "title": "Backup — Home Service Passbook",
+      "titleMatches": true,
+      "canonical": "https://home-service-passbook.sociobot.in/backup",
+      "description": "Export or import a complete Home Service Passbook backup.",
+      "h1": 1,
+      "main": 1
+    },
+    {
+      "path": "/privacy",
+      "status": 200,
+      "title": "Privacy — Home Service Passbook",
+      "titleMatches": true,
+      "canonical": "https://home-service-passbook.sociobot.in/privacy",
+      "description": "Read how Home Service Passbook stores records and handles license checks.",
+      "h1": 1,
+      "main": 1
+    },
+    {
+      "path": "/terms",
+      "status": 200,
+      "title": "Terms — Home Service Passbook",
+      "titleMatches": true,
+      "canonical": "https://home-service-passbook.sociobot.in/terms",
+      "description": "Read the terms for using Home Service Passbook and House Key.",
+      "h1": 1,
+      "main": 1
+    }
+  ],
+  "missing": {
+    "status": 404,
+    "title": "Page not found — Home Service Passbook",
+    "h1": "This page is not in the passbook",
+    "home": 1
+  }
+}
