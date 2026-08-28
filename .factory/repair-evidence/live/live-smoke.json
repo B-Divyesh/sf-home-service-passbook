@@ -127,8 +127,14 @@
   "touchTargets": {
     "Reset demo": 44,
     "Start for real": 44,
-    "footer-Privacy": 44,
-    "footer-Terms": 44
+    "footer-Privacy": {
+      "width": 45.078125,
+      "height": 44
+    },
+    "footer-Terms": {
+      "width": 44,
+      "height": 44
+    }
   },
   "offline": true,
   "keyboard": true,

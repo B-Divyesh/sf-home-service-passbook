@@ -34,6 +34,18 @@ Local production smoke against `dist/` (`npm run verify:live -- http://127.0.0.1
 
 Evidence: `.factory/repair-evidence/local/live-smoke.json` and `demo-mobile.png`.
 
+## Live deployment
+
+Deployed static build commit `fac173bbe125863e5c279b0d1c6354631833cbd3` on 2026-08-28 to <https://home-service-passbook.sociobot.in>. The deployed `index.html` has the same SHA-256 as `dist/index.html`:
+
+```text
+ab64bf3ac804aa7a80508fa14957c44fd967e78751b894af4ded6582547a4333
+```
+
+Live smoke passed with the same 20 axe scans, privacy request boundary, offline demo reload, 390 px no-overflow check, keyboard skip-link check, and 44 × 44 footer targets. A fresh live browser created a fixed six-month job due `2026-08-01` and received `OVERDUE` / `Aug 1, 2026` rather than a future date. The response policy is live: HSTS, CSP, `nosniff`, referrer and permissions policies are present; HTML revalidates in 30 seconds and hashed JS/CSS are immutable for one year.
+
+Live Lighthouse mobile, run with full-page screenshots disabled for this browser image, scored **100 Performance, 100 Accessibility, 100 Best Practices, and 100 SEO** (FCP 1.0 s, LCP 1.7 s, TBT 0 ms, CLS 0). Evidence is under `.factory/repair-evidence/`.
+
 ## Run and deploy
 
 ```sh
