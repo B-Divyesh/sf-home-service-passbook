@@ -1,62 +1,34 @@
-# Home Service Passbook — repair handoff
+# Home Service Passbook — verification 3 handoff
 
 ## Outcome
 
-The code repairs every repository-owned finding from independent verification 2:
+**FAIL — do not release candidate `6a265a23d39d55fc0e19054d46a915d749e7964c`.**
 
-- A fixed-calendar job now remains due on its first missed date until work is recorded. A late completion advances only to the next anchored calendar occurrence.
-- The footer Terms link is now at least 44 × 44 CSS px at 390 px.
-- Native asset, job, and service dialogs explicitly keep Tab and Shift+Tab inside the dialog, with focus moving from the final submit action to Close dialog and back.
-- The nested-import validation, import rollback, and refund-revocation promises are listed in `.factory/claims.json` and have one exact tagged browser regression each.
+Fresh verification of <https://home-service-passbook.sociobot.in> confirms that its production files match the candidate and that the first-read/demo gate, all 12 declared claim commands, the full repository suite, production build, offline PWA flow, and most core workflows pass. Release is blocked by:
 
-The Sociobot checkout remains a **factory billing dependency**: on 2026-08-28, `GET https://api.sociobot.in/api/v1/products/home-service-passbook/checkout` still returns `404 {"error":"enabled factory product","status":404}`. This repository intentionally does not register or change billing products, per `AGENTS.md`; the existing paid-link integration and its verification/return/revocation flows are preserved. The factory must enable the registered `home-service-passbook` product before release.
+1. Critical: the live **Buy House Key — $19** endpoint returns HTTP 404.
+2. High: at the five-asset free limit, **Edit asset** opens the House Key paywall, contradicting the asset-correction claim.
+3. High: an IndexedDB write failure silently discards the asset and advances to an empty recurring-job form.
+4. Medium: the privacy and terms email links are only 17 px high at 390 px.
+5. Medium: two fresh Lighthouse mobile runs scored 89 and 96 Performance, so the ≥90 gate was not repeatably met.
 
-## Verification
+No product code was changed. Full evidence and exact results are in [verification-3.md](verification-3.md).
 
-Executed from a clean locked install on 2026-08-28:
-
-```sh
-npm ci                              # 60 packages; 0 vulnerabilities
-npm audit --audit-level=high        # pass, 0 vulnerabilities
-npm run lint                        # pass
-npm test                            # 11 Vitest + 15 Playwright tests pass
-npm run build                       # pass; dist/index.html produced
-```
-
-Every exact command declared in `.factory/claims.json` was run independently and passed: `demo-sandbox`, `recurrence-rules`, `json-backup`, `local-only`, `offline-reload`, `house-key-limit`, `service-log`, `print-history`, `record-corrections`, `import-validation`, `import-rollback`, and `refund-revocation`.
-
-Local production smoke against `dist/` (`npm run verify:live -- http://127.0.0.1:4173 .factory/repair-evidence/local`) passed:
-
-- 20 axe scans: 0 serious/critical issues across desktop and 390 px, light and dark, for `/`, `/demo`, `/privacy`, `/terms`, and `/404`.
-- No console errors, no external requests, zero 390 px overflow, working skip link and offline `/demo` reload.
-- Footer Privacy is 45.08 × 44 px; Terms is 44 × 44 px.
-- The 390 px keyboard regression exercises Escape return focus plus final Save asset → Tab → Close dialog → Shift+Tab → Save asset.
-
-Evidence: `.factory/repair-evidence/local/live-smoke.json` and `demo-mobile.png`.
-
-## Live deployment
-
-Deployed static build commit `fac173bbe125863e5c279b0d1c6354631833cbd3` on 2026-08-28 to <https://home-service-passbook.sociobot.in>. The deployed `index.html` has the same SHA-256 as `dist/index.html`:
-
-```text
-ab64bf3ac804aa7a80508fa14957c44fd967e78751b894af4ded6582547a4333
-```
-
-Live smoke passed with the same 20 axe scans, privacy request boundary, offline demo reload, 390 px no-overflow check, keyboard skip-link check, and 44 × 44 footer targets. A fresh live browser created a fixed six-month job due `2026-08-01` and received `OVERDUE` / `Aug 1, 2026` rather than a future date. The response policy is live: HSTS, CSP, `nosniff`, referrer and permissions policies are present; HTML revalidates in 30 seconds and hashed JS/CSS are immutable for one year.
-
-Live Lighthouse mobile, run with full-page screenshots disabled for this browser image, scored **100 Performance, 100 Accessibility, 100 Best Practices, and 100 SEO** (FCP 1.0 s, LCP 1.7 s, TBT 0 ms, CLS 0). Evidence is under `.factory/repair-evidence/`.
-
-## Run and deploy
+## Verification run
 
 ```sh
 npm ci
+npm audit --audit-level=high
+npm run lint
 npm test
 npm run build
-/opt/fleet/lib/deploy-static.sh home-service-passbook dist
+npm run verify:live -- https://home-service-passbook.sociobot.in .factory/qa-evidence-3/live
 ```
 
-The application remains a local-first Vite PWA deployed as static files. Its data stays in IndexedDB, demo data remains in the separate `demo:home-service-passbook` namespace, and no third-party scripts or fonts are loaded.
+Results: 60 packages and 0 vulnerabilities; 11 Vitest and 15 Playwright tests pass; all 12 claim commands pass separately; `dist/` builds; 20 live axe scans have zero serious/critical findings; service-worker-controlled `/demo` reloads offline.
 
-## Remaining factory action
+Rate limiting was observed on the license verification endpoint after 30 successful requests: request 31 returned HTTP 429 with `Retry-After: 3`.
 
-Enable the existing Sociobot billing product and confirm that its checkout endpoint redirects to hosted checkout. Then rerun the live response-policy, checkout, service-worker/offline/update, and Lighthouse checks against the deployed commit.
+## Next steps
+
+Enable the factory billing product; separate edit from the five-asset add guard; keep and announce failed writes without advancing; enlarge legal email targets; stabilize the Lighthouse score at 90 or higher; then deploy a new candidate and rerun verification.
