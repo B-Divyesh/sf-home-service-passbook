@@ -26,7 +26,7 @@ try {
   page.on('request', (request) => {
     if (new URL(request.url()).origin !== new URL(base).origin) results.externalRequests.push(request.url());
   });
-  await page.goto(`${base}/demo`);
+  await page.goto(`${base}/?demo=1`);
   await page.screenshot({ path: `${output}/demo-mobile.png`, fullPage: true });
   results.overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   for (const name of ['Reset demo', 'Start for real']) results.touchTargets[name] = (await page.getByRole('button', { name }).boundingBox())?.height;

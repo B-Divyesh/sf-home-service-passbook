@@ -1,0 +1,250 @@
+{
+  "cold": {
+    "title": "Home Service Passbook — Track home maintenance",
+    "headline": "Remember every home service job",
+    "sampleHref": "/?demo=1",
+    "sampleBottom": 545.421875,
+    "viewportHeight": 844,
+    "overflow": 0
+  },
+  "demo": {
+    "url": "https://home-service-passbook.sociobot.in/?demo=1",
+    "banner": true,
+    "reset": true,
+    "startReal": true,
+    "jobs": 3,
+    "resetJobs": 3
+  },
+  "calendar": {
+    "filename": "home-service-jobs-2026-08-28.ics",
+    "events": 3,
+    "dates": [
+      "20260814",
+      "20260915",
+      "20261001"
+    ]
+  },
+  "isolation": {
+    "realBoilerSurvives": true,
+    "sampleFurnaceAbsent": true
+  },
+  "focus": {
+    "afterNavigation": true,
+    "afterBack": true
+  },
+  "routes": [
+    {
+      "path": "/",
+      "title": "Home Service Passbook — Track home maintenance",
+      "titleMatches": true,
+      "descriptionMatches": true,
+      "openGraphMatches": true,
+      "twitterMatches": true,
+      "canonical": "https://home-service-passbook.sociobot.in/",
+      "h1": 1,
+      "main": 1
+    },
+    {
+      "path": "/demo",
+      "title": "Demo — Home Service Passbook",
+      "titleMatches": true,
+      "descriptionMatches": true,
+      "openGraphMatches": true,
+      "twitterMatches": true,
+      "canonical": "https://home-service-passbook.sociobot.in/demo",
+      "h1": 1,
+      "main": 1
+    },
+    {
+      "path": "/app",
+      "title": "Your passbook — Home Service Passbook",
+      "titleMatches": true,
+      "descriptionMatches": true,
+      "openGraphMatches": true,
+      "twitterMatches": true,
+      "canonical": "https://home-service-passbook.sociobot.in/app",
+      "h1": 1,
+      "main": 1
+    },
+    {
+      "path": "/history",
+      "title": "Service history — Home Service Passbook",
+      "titleMatches": true,
+      "descriptionMatches": true,
+      "openGraphMatches": true,
+      "twitterMatches": true,
+      "canonical": "https://home-service-passbook.sociobot.in/history",
+      "h1": 1,
+      "main": 1
+    },
+    {
+      "path": "/backup",
+      "title": "Backup — Home Service Passbook",
+      "titleMatches": true,
+      "descriptionMatches": true,
+      "openGraphMatches": true,
+      "twitterMatches": true,
+      "canonical": "https://home-service-passbook.sociobot.in/backup",
+      "h1": 1,
+      "main": 1
+    },
+    {
+      "path": "/privacy",
+      "title": "Privacy — Home Service Passbook",
+      "titleMatches": true,
+      "descriptionMatches": true,
+      "openGraphMatches": true,
+      "twitterMatches": true,
+      "canonical": "https://home-service-passbook.sociobot.in/privacy",
+      "h1": 1,
+      "main": 1
+    },
+    {
+      "path": "/terms",
+      "title": "Terms — Home Service Passbook",
+      "titleMatches": true,
+      "descriptionMatches": true,
+      "openGraphMatches": true,
+      "twitterMatches": true,
+      "canonical": "https://home-service-passbook.sociobot.in/terms",
+      "h1": 1,
+      "main": 1
+    }
+  ],
+  "missing": {
+    "status": 404,
+    "title": "Page not found — Home Service Passbook",
+    "h1": 1,
+    "passbookLink": true,
+    "factory": true,
+    "manifest": 1,
+    "appleTouch": 1
+  },
+  "accessibility": [
+    {
+      "width": 390,
+      "colorScheme": "light",
+      "path": "/",
+      "seriousCritical": 0
+    },
+    {
+      "width": 390,
+      "colorScheme": "light",
+      "path": "/?demo=1",
+      "seriousCritical": 0
+    },
+    {
+      "width": 390,
+      "colorScheme": "light",
+      "path": "/privacy",
+      "seriousCritical": 0
+    },
+    {
+      "width": 390,
+      "colorScheme": "light",
+      "path": "/terms",
+      "seriousCritical": 0
+    },
+    {
+      "width": 390,
+      "colorScheme": "light",
+      "path": "/missing-polish-1-axe",
+      "seriousCritical": 0
+    },
+    {
+      "width": 390,
+      "colorScheme": "dark",
+      "path": "/",
+      "seriousCritical": 0
+    },
+    {
+      "width": 390,
+      "colorScheme": "dark",
+      "path": "/?demo=1",
+      "seriousCritical": 0
+    },
+    {
+      "width": 390,
+      "colorScheme": "dark",
+      "path": "/privacy",
+      "seriousCritical": 0
+    },
+    {
+      "width": 390,
+      "colorScheme": "dark",
+      "path": "/terms",
+      "seriousCritical": 0
+    },
+    {
+      "width": 390,
+      "colorScheme": "dark",
+      "path": "/missing-polish-1-axe",
+      "seriousCritical": 0
+    },
+    {
+      "width": 1280,
+      "colorScheme": "light",
+      "path": "/",
+      "seriousCritical": 0
+    },
+    {
+      "width": 1280,
+      "colorScheme": "light",
+      "path": "/?demo=1",
+      "seriousCritical": 0
+    },
+    {
+      "width": 1280,
+      "colorScheme": "light",
+      "path": "/privacy",
+      "seriousCritical": 0
+    },
+    {
+      "width": 1280,
+      "colorScheme": "light",
+      "path": "/terms",
+      "seriousCritical": 0
+    },
+    {
+      "width": 1280,
+      "colorScheme": "light",
+      "path": "/missing-polish-1-axe",
+      "seriousCritical": 0
+    },
+    {
+      "width": 1280,
+      "colorScheme": "dark",
+      "path": "/",
+      "seriousCritical": 0
+    },
+    {
+      "width": 1280,
+      "colorScheme": "dark",
+      "path": "/?demo=1",
+      "seriousCritical": 0
+    },
+    {
+      "width": 1280,
+      "colorScheme": "dark",
+      "path": "/privacy",
+      "seriousCritical": 0
+    },
+    {
+      "width": 1280,
+      "colorScheme": "dark",
+      "path": "/terms",
+      "seriousCritical": 0
+    },
+    {
+      "width": 1280,
+      "colorScheme": "dark",
+      "path": "/missing-polish-1-axe",
+      "seriousCritical": 0
+    }
+  ],
+  "privacy": {
+    "externalRequests": []
+  },
+  "offline": true,
+  "errors": []
+}
