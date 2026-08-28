@@ -2,7 +2,7 @@
 
 ## Release status: PASS
 
-Work order `home-service-passbook-repair-4` repairs the controller-reported browser-suite failure without changing the researched brief, product behavior, PWA artifact, or static deployment class. The repaired commit is recorded below after deployment.
+Work order `home-service-passbook-repair-4` repairs the controller-reported browser-suite failure without changing the researched brief, product behavior, PWA artifact, or static deployment class. The repair commit is `1ab5b889b69db9192ddf6a026a43bb34ccdf9614`; its static build is deployed at <https://home-service-passbook.sociobot.in>.
 
 ## Repair made
 
@@ -45,15 +45,15 @@ Results on 2026-08-28:
 - Live smoke passed at `https://home-service-passbook.sociobot.in`: checkout is a `303` to `checkout.dodopayments.com`; no console error or unexpected external request; keyboard, offline reload, 390 px overflow, and footer targets pass; all 20 live Axe scans are clear. Evidence: `.factory/repair-4-evidence/live/live-smoke.json` and `demo-mobile.png`.
 - The live product remains local-first. License verification is the only allowed external product API path. Response headers and static routing are covered by the retained deployment-policy tests; the live smoke validates the real checkout identity.
 
-## Deployment
+## Deployment and live identity
 
-Deploy the already-built static output with:
+Deployed the already-built static output with:
 
 ```sh
 /opt/fleet/lib/deploy-static.sh home-service-passbook /work/repo/dist
 ```
 
-Then rerun `npm run verify:live -- https://home-service-passbook.sociobot.in .factory/repair-4-evidence/live` and compare deployed static hashes with `dist/`.
+Azure Static Web Apps deployment `0c92064c-912e-48a6-8fbe-6038f2b41013` succeeded in `centralus`; the custom domain is `Ready` and HTTPS returns 200. Post-deploy SHA-256 values match `dist/` for `index.html`, hashed JS/CSS, `sw.js`, `manifest.webmanifest`, and `404.html`. The live hashed JS response is `Cache-Control: public, max-age=31536000, immutable`; it also has CSP, nosniff, referrer, and permissions headers. `/not-a-real-route` returns HTTP 404.
 
 ## Known gaps
 
