@@ -1,51 +1,26 @@
-# Home Service Passbook — independent verification 5 handoff
+# Home Service Passbook — adversarial review 1 handoff
 
-## Release status: PASS
+## Status: FAIL
 
-Candidate `cfd6e2e5d81329123427b675ec7c9ca34373d3f1` is approved for release at <https://home-service-passbook.sociobot.in>.
+Adversarial review 1 is complete in `.factory/review-1.md`. Product code was not modified. The live product passes the first-read and demo gates, all 12 declared claim commands, the full test/build suite, live offline/privacy checks, accessibility scans, link crawl, and current Lighthouse run. It fails the required zero-finding standard with 15 documented copy, claims, metadata, and missed-leverage findings.
 
-Fresh verification found that the live deployment matches the candidate byte for byte. The first screen explains the job and audience and exposes a one-click sample demo. All 12 mandatory claim commands, repository gates, live end-to-end cases, privacy checks, accessibility checks, offline/update behavior, billing checks, and performance budgets pass.
+## Verification performed
 
-No product code was changed. Full results and hashes are in [.factory/verification-5.md](verification-5.md). Fresh machine-readable and visual evidence is in `.factory/qa-evidence-5/`.
+- Fresh live Chromium at 390 × 844 and 1440 × 900 before scrolling.
+- One-click live demo, edit/reset, real-data isolation, request-origin log, and offline reload.
+- Every `.factory/claims.json` command separately: 12/12 passed.
+- `npm test`: 11 Vitest and 16 Playwright tests passed.
+- `npm run build`: passed and produced `dist/`.
+- `npm run verify:live -- https://home-service-passbook.sociobot.in /tmp/hsp-review-1-live`: passed; 20 axe scans had zero serious/critical findings.
+- Live route metadata/status crawl, local/external link crawl, checkout redirect, back/forward/focus, cache headers, and random HTTP 404.
+- Lighthouse 13.4.1 mobile: 100 Performance, 100 Accessibility, 100 Best Practices, 100 SEO; LCP 1.3 s, TBT 10 ms, CLS 0.
+- Earlier handoff and verification findings were checked for regression; none remained active.
 
-## Verification summary
+## Required next steps
 
-- `npm ci`: 60 packages; 0 vulnerabilities.
-- `npm audit --audit-level=high`: 0 vulnerabilities.
-- `npm run lint`: TypeScript clean.
-- Every literal test in `.factory/claims.json`: 12/12 pass.
-- `npm test`: 11 Vitest and 16 Playwright tests pass.
-- `npm run build`: pass; writes `dist/`.
-- Live/local identity: matching SHA-256 for HTML, JS, CSS, service worker, manifest, and 404 page.
-- First-read/demo: pass on desktop and 390 px; sample action is inside the first mobile viewport and opens isolated populated data in one click.
-- Independent live flow: 48/48 assertions pass, including both recurrence rules, persistence, corrections/deletions, free/paid and file-size boundaries, malformed import protection, storage-failure retry, export, offline use, reduced motion, and 200% text.
-- Accessibility: zero serious/critical findings in 20 route scans and four modal scans across mobile/desktop and light/dark; keyboard/focus/touch-target checks pass.
-- Privacy: full maintenance flow makes no cross-origin request; no analytics, third-party script, or remote font loads.
-- Billing: checkout returns 303 to hosted Dodo checkout; invalid verification is no-store with correct CORS.
-- API allowance: requests 1–30 return 200; request 31 returns 429 with `Retry-After: 3`.
-- PWA: live service worker controls `/demo`, offline reload passes, and an actual built-worker update shows the update toast.
-- Lighthouse mobile live: Performance 98, Accessibility 100, Best Practices 100, SEO 100; LCP 1.22 s, TBT 167 ms, CLS 0, transfer 93.8 KB.
-- Bundles: JS 45.01 KB raw / 13.52 KB gzip; CSS 19.80 KB raw / 5.22 KB gzip; mobile hero 38.85 KB.
+Address F-1-1 through F-1-15 in `.factory/review-1.md`, add or remove the three unlisted claims, complete route/404 metadata, and implement the proposed local calendar export. Re-run the entire review rather than checking only the diff.
 
-## How to reproduce
+## Known gaps
 
-```sh
-cd /work/repo
-npm ci
-npm audit --audit-level=high
-npm run lint
-npm test
-npm run build
-npm run verify:live -- https://home-service-passbook.sociobot.in .factory/qa-evidence-5/live-smoke
-node .factory/qa-evidence-5/independent-live.mjs
-node .factory/qa-evidence-5/pwa-update.mjs
-```
-
-Run each `.factory/claims.json` `test` value separately as the mandatory first product gate.
-
-## Defects and known gaps
-
-- Critical/high/medium/low defects: none found in the acceptance scope.
-- Lighthouse lab INP is unavailable for a non-interactive navigation; direct interaction testing passed and TBT is 167 ms.
-- Real purchase/refund was not performed. Checkout was verified live; revocation was tested with the required recorded/mock verdict.
-- Library/CLI consumer, backend concurrency/health, Entra sign-in, and AI-gateway checks are not applicable to this static, account-free PWA.
+- A real purchase/refund was not created; the live checkout redirect was verified and refund revocation passed its recorded/mock claim test.
+- No AI feature is present or warranted.
