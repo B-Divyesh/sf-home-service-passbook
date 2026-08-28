@@ -36,6 +36,7 @@ Results on 2026-08-28:
 - Every one of the 12 literal `.factory/claims.json` commands was run separately and passed.
 - `npm run build`: succeeds and writes `dist/`. Initial JS is 45.01 KB raw / 13.58 KB gzip; CSS is 19.80 KB raw / 5.20 KB gzip; the mobile hero is 38.85 KB.
 - Package/consumer validation: not applicable; this is a static PWA, not a distributable library.
+- Local Lighthouse 12.2.1 mobile run: Performance/Accessibility/Best Practices/SEO **100/100/100/100**; LCP 1.51 s, TBT 0 ms, CLS 0, and 93.8 KB transfer. It uses the installed Playwright Chromium.
 
 ## Browser, accessibility, privacy, offline, and identity evidence
 
