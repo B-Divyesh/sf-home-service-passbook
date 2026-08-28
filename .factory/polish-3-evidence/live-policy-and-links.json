@@ -1,0 +1,68 @@
+{
+  "source": {
+    "asset": "assets/index-D6UTkeiZ.js",
+    "discardedLandingCopyAbsent": true,
+    "photoCopy": true,
+    "importCopy": true,
+    "oldImportJargonAbsent": true
+  },
+  "headers": {
+    "csp": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; connect-src 'self' https://api.sociobot.in; object-src 'none'; base-uri 'self'; form-action 'self' https://api.sociobot.in; frame-ancestors 'none'",
+    "referrerPolicy": "strict-origin-when-cross-origin",
+    "nosniff": "nosniff"
+  },
+  "links": [
+    {
+      "path": "/",
+      "status": 200
+    },
+    {
+      "path": "/demo",
+      "status": 200
+    },
+    {
+      "path": "/app",
+      "status": 200
+    },
+    {
+      "path": "/history",
+      "status": 200
+    },
+    {
+      "path": "/backup",
+      "status": 200
+    },
+    {
+      "path": "/privacy",
+      "status": 200
+    },
+    {
+      "path": "/terms",
+      "status": 200
+    },
+    {
+      "path": "/robots.txt",
+      "status": 200
+    },
+    {
+      "path": "/sitemap.xml",
+      "status": 200
+    },
+    {
+      "path": "/manifest.webmanifest",
+      "status": 200
+    },
+    {
+      "path": "/favicon.svg",
+      "status": 200
+    },
+    {
+      "path": "/icons/apple-touch-icon.png",
+      "status": 200
+    },
+    {
+      "path": "/assets/social-preview.webp",
+      "status": 200
+    }
+  ]
+}

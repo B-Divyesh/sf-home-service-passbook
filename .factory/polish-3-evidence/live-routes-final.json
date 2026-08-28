@@ -1,0 +1,79 @@
+{
+  "errors": [],
+  "routes": [
+    {
+      "path": "/",
+      "status": 200,
+      "title": "Home Service Passbook — Track home maintenance",
+      "canonical": "https://home-service-passbook.sociobot.in/",
+      "h1": 1,
+      "main": 1,
+      "valid": true
+    },
+    {
+      "path": "/demo",
+      "status": 200,
+      "title": "Demo — Home Service Passbook",
+      "canonical": "https://home-service-passbook.sociobot.in/demo",
+      "h1": 1,
+      "main": 1,
+      "valid": true
+    },
+    {
+      "path": "/app",
+      "status": 200,
+      "title": "Your passbook — Home Service Passbook",
+      "canonical": "https://home-service-passbook.sociobot.in/app",
+      "h1": 1,
+      "main": 1,
+      "valid": true
+    },
+    {
+      "path": "/history",
+      "status": 200,
+      "title": "Service history — Home Service Passbook",
+      "canonical": "https://home-service-passbook.sociobot.in/history",
+      "h1": 1,
+      "main": 1,
+      "valid": true
+    },
+    {
+      "path": "/backup",
+      "status": 200,
+      "title": "Backup — Home Service Passbook",
+      "canonical": "https://home-service-passbook.sociobot.in/backup",
+      "h1": 1,
+      "main": 1,
+      "valid": true
+    },
+    {
+      "path": "/privacy",
+      "status": 200,
+      "title": "Privacy — Home Service Passbook",
+      "canonical": "https://home-service-passbook.sociobot.in/privacy",
+      "h1": 1,
+      "main": 1,
+      "valid": true
+    },
+    {
+      "path": "/terms",
+      "status": 200,
+      "title": "Terms — Home Service Passbook",
+      "canonical": "https://home-service-passbook.sociobot.in/terms",
+      "h1": 1,
+      "main": 1,
+      "valid": true
+    }
+  ],
+  "focus": {
+    "privacy": true,
+    "announcement": "Your records stay under your control",
+    "back": true
+  },
+  "missing": {
+    "status": 404,
+    "label": "Page not found",
+    "h1": "This page is not in the passbook",
+    "returnHome": true
+  }
+}

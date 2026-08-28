@@ -1,0 +1,9 @@
+{
+  "errors": [],
+  "banner": "Demo — sample data, nothing is saved to your passbook.\nReset demo\nStart for real",
+  "reset": true,
+  "sample": true,
+  "temporaryAdded": true,
+  "temporaryRemoved": true,
+  "overflow": 0
+}

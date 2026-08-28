@@ -1,0 +1,86 @@
+{
+  "routes": [
+    {
+      "path": "/",
+      "title": "Home Service Passbook — Track home maintenance",
+      "h1": 1,
+      "main": 1,
+      "canonical": "https://home-service-passbook.sociobot.in/"
+    },
+    {
+      "path": "/demo",
+      "title": "Demo — Home Service Passbook",
+      "h1": 1,
+      "main": 1,
+      "canonical": "https://home-service-passbook.sociobot.in/demo"
+    },
+    {
+      "path": "/app",
+      "title": "Your passbook — Home Service Passbook",
+      "h1": 1,
+      "main": 1,
+      "canonical": "https://home-service-passbook.sociobot.in/app"
+    },
+    {
+      "path": "/history",
+      "title": "Service history — Home Service Passbook",
+      "h1": 1,
+      "main": 1,
+      "canonical": "https://home-service-passbook.sociobot.in/history"
+    },
+    {
+      "path": "/backup",
+      "title": "Backup — Home Service Passbook",
+      "h1": 1,
+      "main": 1,
+      "canonical": "https://home-service-passbook.sociobot.in/backup"
+    },
+    {
+      "path": "/privacy",
+      "title": "Privacy — Home Service Passbook",
+      "h1": 1,
+      "main": 1,
+      "canonical": "https://home-service-passbook.sociobot.in/privacy"
+    },
+    {
+      "path": "/terms",
+      "title": "Terms — Home Service Passbook",
+      "h1": 1,
+      "main": 1,
+      "canonical": "https://home-service-passbook.sociobot.in/terms"
+    }
+  ],
+  "firstScreen": {
+    "desktop": {
+      "heading": "Remember every home service job",
+      "eyebrow": "Private home maintenance passbook.",
+      "sampleHref": "/?demo=1",
+      "readout": "\n          03 assets01 due now04 service entries\n        ",
+      "primaryVisible": true
+    },
+    "mobile": {
+      "heading": "Remember every home service job",
+      "eyebrow": "Private home maintenance passbook.",
+      "sampleHref": "/?demo=1",
+      "readout": "\n          03 assets01 due now04 service entries\n        ",
+      "primaryVisible": true
+    }
+  },
+  "demo": {
+    "desktop": {
+      "banner": "\n    Demo — sample data, nothing is saved to your passbook.\n    Reset demoStart for real\n  ",
+      "reset": true,
+      "startReal": true,
+      "job": true,
+      "readoutVisible": false
+    },
+    "mobile": {
+      "banner": "\n    Demo — sample data, nothing is saved to your passbook.\n    Reset demoStart for real\n  ",
+      "reset": true,
+      "startReal": true,
+      "job": true,
+      "readoutVisible": false
+    }
+  },
+  "errors": []
+}

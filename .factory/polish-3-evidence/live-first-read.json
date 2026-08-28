@@ -1,0 +1,25 @@
+{
+  "views": {
+    "desktop": {
+      "title": "Home Service Passbook — Track home maintenance",
+      "heading": "Remember every home service job",
+      "eyebrow": "Private home maintenance passbook.",
+      "href": "/?demo=1",
+      "beforeFold": true,
+      "status": "03\nASSETS\n01\nDUE NOW\n04\nSERVICE ENTRIES",
+      "oldCopy": null,
+      "overflow": 0
+    },
+    "mobile": {
+      "title": "Home Service Passbook — Track home maintenance",
+      "heading": "Remember every home service job",
+      "eyebrow": "Private home maintenance passbook.",
+      "href": "/?demo=1",
+      "beforeFold": true,
+      "status": "03\nASSETS\n01\nDUE NOW\n04\nSERVICE ENTRIES",
+      "oldCopy": null,
+      "overflow": 0
+    }
+  },
+  "errors": []
+}
