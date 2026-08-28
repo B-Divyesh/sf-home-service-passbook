@@ -20,7 +20,7 @@ describe('static deployment policy', () => {
     const page = readFileSync('public/404.html', 'utf8');
     for (const required of [
       'href="/demo">Demo', 'href="/app">Passbook', 'href="/privacy">Privacy',
-      'href="/terms">Terms', 'Built by Param Factory · v1.0.3',
+      'href="/terms">Terms', 'Built by Param Factory · v1.0.4',
       'property="og:title"', 'property="og:description"', 'name="twitter:title"',
       'name="twitter:description"', 'rel="apple-touch-icon"', 'rel="manifest"',
       'name="theme-color"'

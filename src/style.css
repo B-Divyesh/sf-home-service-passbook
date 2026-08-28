@@ -71,7 +71,6 @@ h3 { font-size: 1.2rem; }
 .dial-strip { min-height: 72px; padding: 12px 8px 0; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; color: #f5eedc; text-transform: uppercase; font-size: .64rem; letter-spacing: .08em; }
 .dial-strip span { display: flex; flex-direction: column; justify-content: center; padding: 0 10px; border-right: 1px solid #75827c; }
 .dial-strip span:last-child { border: 0; }.dial-strip b { font-family: var(--display); font-size: 1.35rem; color: #fff; }
-.dial-strip .lamp { flex-direction: row; align-items: center; gap: 8px; }.lamp i { width: 12px; height: 12px; border-radius: 50%; background: #63c7bb; box-shadow: 0 0 0 3px #0d2523; }
 .preview-section { padding: clamp(64px, 9vw, 120px) clamp(20px, 8vw, 120px); background: var(--panel); color: #f5eedc; display: grid; grid-template-columns: .65fr 1.35fr; gap: clamp(32px, 7vw, 96px); }
 .section-heading { max-width: 52ch; }.section-heading p:last-child { color: #bfc6be; }.preview-section .eyebrow { color: #63c7bb; }
 .ledger-preview { border: 2px solid #a7aea9; background: #1c2421; box-shadow: 8px 8px 0 #0e1211; }
@@ -112,7 +111,7 @@ dialog { width: min(620px, calc(100% - 32px)); max-height: calc(100vh - 32px); p
 @media (max-width: 760px) {
   .site-header { min-height: 72px; padding: 10px 16px; flex-wrap: wrap; }.wordmark-mark { width: 36px; height: 36px; }.site-header nav { width: 100%; justify-content: space-between; gap: 4px; }.site-header nav a { padding: 0 8px; font-size: .82rem; }.site-header nav a:first-child { display: none; }
   .demo-banner { align-items: flex-start; flex-direction: column; gap: 2px; padding: 8px 16px; }.demo-actions { gap: 20px; }
-  .hero { grid-template-columns: 1fr; padding-top: 48px; }.hero h1 { font-size: clamp(2.8rem, 13vw, 4rem); }.hero-actions { flex-direction: column; }.hero-actions .button { width: 100%; }.hero-instrument { margin: 6px -8px 0; transform: rotate(.4deg); box-shadow: 7px 8px 0 #9f9887; }.instrument-label { font-size: .58rem; }.dial-strip { grid-template-columns: 1fr 1fr; }.dial-strip span:nth-child(3) { display: none; }
+  .hero { grid-template-columns: 1fr; padding-top: 48px; }.hero h1 { font-size: clamp(2.8rem, 13vw, 4rem); }.hero-actions { flex-direction: column; }.hero-actions .button { width: 100%; }.hero-instrument { margin: 6px -8px 0; transform: rotate(.4deg); box-shadow: 7px 8px 0 #9f9887; }.instrument-label { font-size: .58rem; }.dial-strip { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; font-size: .55rem; }.dial-strip span { padding-inline: 6px; }.dial-strip b { font-size: 1.18rem; }
   .preview-section, .limits, .paid { grid-template-columns: 1fr; }.preview-section { padding-inline: 20px; }.ledger-preview article { grid-template-columns: 1fr; }.readout { min-height: auto; }.how li { grid-template-columns: 64px 1fr; }.limits, .paid { gap: 16px; }
   .site-footer { grid-template-columns: 1fr; }.site-footer p:last-child { text-align: left; }.site-footer > div { order: 3; }
   .app-head { min-height: 300px; padding: 32px 20px; flex-direction: column; align-items: flex-start; }.app-head h1 { font-size: 2.7rem; }.counter-panel { width: 100%; min-width: 0; grid-template-columns: 1fr 1fr 58px; }

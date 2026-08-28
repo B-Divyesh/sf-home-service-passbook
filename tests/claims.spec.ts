@@ -25,6 +25,7 @@ test('@claim:demo-sandbox demo is filled and isolated from real data', async ({ 
   await page.goto('/');
   const sampleAction = page.getByRole('link', { name: 'Try it with sample data' });
   await expect(sampleAction).toHaveAttribute('href', '/?demo=1');
+  await expect(page.getByLabel('Example maintenance status')).toContainText('04 service entries');
   await sampleAction.click();
   await expect(page).toHaveURL('/?demo=1');
   await expect(page.getByText('Demo — sample data, nothing is saved to your passbook.')).toBeVisible();
@@ -334,28 +335,35 @@ test('@claim:service-log a household can add an asset, schedule work, complete i
   await expect(entry).toContainText('Plumber invoice 208');
 });
 
-test('@claim:import-validation malformed nested imports are rejected before confirmation without replacing valid records', async ({ page }) => {
-  await page.goto('/app');
-  await page.getByRole('button', { name: 'Add an asset' }).click();
-  await page.getByLabel('Area').fill('Basement');
-  await page.getByLabel('Asset name').fill('Boiler');
-  await page.getByRole('button', { name: 'Save asset' }).click();
-  await page.getByRole('button', { name: 'Close dialog' }).click();
+test('@claim:import-validation import checks every record type before confirmation', async ({ page }) => {
+  await page.goto('/?demo=1');
   await page.getByRole('button', { name: 'Backup', exact: true }).click();
-  await page.locator('#import-file').setInputFiles({
-    name: 'corrupt.json', mimeType: 'application/json',
-    buffer: Buffer.from(JSON.stringify({ version: 1, exportedAt: new Date().toISOString(), areas: [{}], assets: [{}], tasks: [], completions: [] }))
-  });
-  await expect(page.locator('.toast')).toContainText('invalid area id');
-  await page.reload();
+  const exportDownload = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Export passbook' }).click();
+  const stream = await (await exportDownload).createReadStream();
+  const chunks: Buffer[] = [];
+  for await (const chunk of stream) chunks.push(Buffer.from(chunk));
+  const backup = JSON.parse(Buffer.concat(chunks).toString());
+  backup.completions[0].attachment = { name: 'proof.png', type: 'image/png', dataUrl: 'data:image/png;base64,cHJvb2Y=' };
+  const invalidBackups = [
+    ['area', { ...backup, areas: [{ ...backup.areas[0], id: '' }, ...backup.areas.slice(1)] }],
+    ['asset', { ...backup, assets: [{ ...backup.assets[0], areaId: 'missing-area' }, ...backup.assets.slice(1)] }],
+    ['job', { ...backup, tasks: [{ ...backup.tasks[0], intervalMonths: 0 }, ...backup.tasks.slice(1)] }],
+    ['service entry', { ...backup, completions: [{ ...backup.completions[0], completedOn: 'not-a-date' }, ...backup.completions.slice(1)] }],
+    ['attachment', { ...backup, completions: [{ ...backup.completions[0], attachment: { ...backup.completions[0].attachment, type: 'text/plain', dataUrl: 'data:text/plain;base64,cHJvb2Y=' } }, ...backup.completions.slice(1)] }]
+  ] as const;
+  let confirmationCount = 0;
+  page.on('dialog', (dialog) => { confirmationCount += 1; void dialog.dismiss(); });
+  for (const [kind, invalid] of invalidBackups) {
+    await page.locator('#import-file').setInputFiles({ name: `invalid-${kind}.json`, mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(invalid)) });
+    await expect(page.locator('.toast')).toContainText('backup');
+  }
+  expect(confirmationCount).toBe(0);
   await page.getByRole('button', { name: 'Assets' }).click();
-  await expect(page.getByRole('heading', { name: 'Boiler' })).toBeVisible();
-  await page.getByRole('button', { name: 'Backup', exact: true }).click();
-  await page.locator('#import-file').setInputFiles({ name: 'broken.json', mimeType: 'application/json', buffer: Buffer.from('{not json') });
-  await expect(page.locator('.toast')).toContainText('not valid JSON');
+  await expect(page.getByRole('heading', { name: 'Furnace' })).toBeVisible();
 });
 
-test('@claim:import-rollback the passbook before an import is restored if imported state fails startup validation', async ({ page }) => {
+test('@claim:import-rollback the passbook from before an import returns if imported data cannot open later', async ({ page }) => {
   await page.goto('/app');
   await page.getByRole('button', { name: 'Add an asset' }).click();
   await page.getByLabel('Area').fill('Basement');

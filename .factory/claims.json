@@ -78,17 +78,17 @@
   },
   {
     "id": "import-validation",
-    "claim": "Import validates every nested record before confirmation.",
+    "claim": "Before replacing your passbook, import checks every area, asset, job, service entry, and attachment.",
     "where": "README",
     "test": "npm test -- --grep @claim:import-validation",
-    "sandbox": "a real Boiler exists; malformed nested and malformed JSON files are rejected and the existing record survives reload"
+    "sandbox": "demo backup fixtures with one malformed area, asset, job, service entry, or attachment are each rejected before the confirmation prompt; the sample passbook remains intact"
   },
   {
     "id": "import-rollback",
-    "claim": "The prior passbook is retained as a rollback if imported data ever fails startup validation.",
+    "claim": "If imported data cannot open later, the app restores the passbook you had before importing.",
     "where": "README and import confirmation",
     "test": "npm test -- --grep @claim:import-rollback",
-    "sandbox": "import a valid replacement, corrupt its stored state, reload, and assert the prior passbook is restored"
+    "sandbox": "import a valid replacement, corrupt its saved state, reload, and assert the earlier passbook returns"
   },
   {
     "id": "refund-revocation",

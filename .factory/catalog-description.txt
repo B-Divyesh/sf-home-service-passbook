@@ -1,1 +1,1 @@
-Record recurring home service jobs and keep proof in a private offline passbook.
+Keep home service work, due dates, and proof in a private browser passbook.

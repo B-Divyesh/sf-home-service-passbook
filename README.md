@@ -12,7 +12,8 @@ Demo: <https://home-service-passbook.sociobot.in/?demo=1>
 
 - Stores areas, assets, and recurring jobs in the browser.
 - Schedules jobs on fixed dates or from the last completion date.
-- Records service dates, notes, receipt references, and licensed photo attachments.
+- Records service dates, notes, and receipt references.
+- House Key also stores photo attachments.
 - Lets you edit or delete assets, recurring jobs, and service entries.
 - Exports and imports one complete JSON backup.
 - Exports every current job and due date to a calendar file.
@@ -47,7 +48,7 @@ npm run preview
 
 Passbook data stays in browser IndexedDB unless the user exports it. License verification sends only the license token to `api.sociobot.in`. There are no analytics, third-party scripts, or remote fonts.
 
-Export JSON before clearing site data or moving devices. Import validates every nested record before confirmation. The prior passbook is retained as a rollback if imported data ever fails startup validation.
+Export JSON before clearing site data or moving devices. Before replacing your passbook, import checks every area, asset, job, service entry, and attachment. If imported data cannot open later, the app restores the passbook you had before importing.
 
 ## Scope
 

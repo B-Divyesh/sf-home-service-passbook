@@ -12,6 +12,7 @@ let pendingToast = '';
 let installPrompt: Event | null = null;
 
 const PRODUCT_SLUG = 'home-service-passbook';
+const PRODUCT_VERSION = '1.0.4';
 const LICENSE_KEY = `sb_license:${PRODUCT_SLUG}`;
 const VERDICT_KEY = `sb_license_verdict:${PRODUCT_SLUG}`;
 const CHECKOUT_URL = `https://api.sociobot.in/api/v1/products/${PRODUCT_SLUG}/checkout`;
@@ -53,7 +54,7 @@ function shell(content: string): string {
       <footer class="site-footer">
         <p><strong>Home Service Passbook</strong><br>Household-owned maintenance records.</p>
         <div><a href="/privacy" data-link>Privacy</a><a href="/terms" data-link>Terms</a></div>
-        <p>Built by Param Factory · v1.0.3</p>
+        <p>Built by Param Factory · v${PRODUCT_VERSION}</p>
       </footer>
       <div class="route-status sr-only" aria-live="polite"></div>
       <div class="toast" role="status" aria-live="polite" hidden></div>
@@ -71,7 +72,7 @@ function landing(): string {
   return shell(`
     <section class="hero">
       <div class="hero-copy">
-        <p class="eyebrow">A private log for the work at home</p>
+        <p class="eyebrow">Private home maintenance passbook.</p>
         <h1 tabindex="-1">Remember every home service job</h1>
         <p class="lede">For households tracking recurring care, service dates, notes, and receipts without another appliance account.</p>
         <div class="hero-actions">
@@ -93,7 +94,7 @@ function landing(): string {
           <img src="/assets/hero-1200.webp" width="1200" height="800" fetchpriority="high" decoding="async" alt="A furnace filter, service tag, receipt, screwdriver, and maintenance dial arranged on a workbench.">
         </picture>
         <div class="dial-strip" aria-label="Example maintenance status">
-          <span><b>03</b> assets</span><span><b>01</b> due now</span><span class="lamp"><i></i> log ready</span>
+          <span><b>03</b> assets</span><span><b>01</b> due now</span><span><b>04</b> service entries</span>
         </div>
       </div>
     </section>
@@ -597,7 +598,7 @@ async function importBackup(event: Event): Promise<void> {
     catch { throw new Error('The backup is not valid JSON. Choose an exported passbook file.'); }
     const imported = validateImport(parsed);
     if (!confirm(`Replace this passbook with ${imported.assets.length} assets and ${imported.completions.length} service entries?`)) { input.value = ''; return; }
-    await replaceWithImport(imported); state = imported; await render(); showToast('Passbook imported. Your earlier records can be restored if startup validation fails.');
+    await replaceWithImport(imported); state = imported; await render(); showToast('Passbook imported. If it cannot open later, your earlier passbook will return.');
   } catch (error) { showToast(error instanceof Error ? error.message : 'The backup could not be read. Choose an exported JSON file.'); input.value = ''; }
 }
 
