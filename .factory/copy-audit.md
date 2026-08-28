@@ -49,7 +49,6 @@ Audited 2026-08-28. Counts treat hyphenated terms and prices as one word. No sen
 | Restore a license | 3 | Pass |
 | Household-owned maintenance records. | 3 | Pass |
 | Built by Param Factory · v1.0.3 | 5 | Pass |
-| Original generated artwork. | 3 | Pass |
 
 ## README fixes
 
@@ -69,3 +68,5 @@ The introduction now uses household terms instead of “durable,” “PWA,” o
 | Paid license | House Key |
 | Downloaded portable record | backup |
 | Calendar reminder download | calendar file |
+
+The app eyebrow uses **Passbook**. The 404 label is **Page not found**. The hero uses the useful label **Service record**; it has no decorative identifier.

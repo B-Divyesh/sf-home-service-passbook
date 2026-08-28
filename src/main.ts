@@ -53,7 +53,7 @@ function shell(content: string): string {
       <footer class="site-footer">
         <p><strong>Home Service Passbook</strong><br>Household-owned maintenance records.</p>
         <div><a href="/privacy" data-link>Privacy</a><a href="/terms" data-link>Terms</a></div>
-        <p>Built by Param Factory · v1.0.3<br>Original generated artwork.</p>
+        <p>Built by Param Factory · v1.0.3</p>
       </footer>
       <div class="route-status sr-only" aria-live="polite"></div>
       <div class="toast" role="status" aria-live="polite" hidden></div>
@@ -86,7 +86,7 @@ function landing(): string {
         </ul>
       </div>
       <div class="hero-instrument">
-        <div class="instrument-label"><span>SERVICE RECORD</span><strong>HOME / 01</strong></div>
+        <div class="instrument-label"><span>Service record</span></div>
         <picture>
           <source media="(max-width: 760px)" type="image/webp" srcset="/assets/hero-640.webp">
           <source type="image/webp" srcset="/assets/hero-640.webp 640w, /assets/hero-1200.webp 1200w" sizes="(max-width: 760px) 100vw, 50vw">
@@ -128,7 +128,7 @@ function appPage(): string {
   const overdueCount = dueTasks.filter((task) => dueState(nextDue(task, state.completions)) === 'overdue').length;
   return shell(`
     <section class="app-head">
-      <div><p class="eyebrow">Household ledger</p><h1 tabindex="-1">${activePanel === 'due' ? 'What needs care next' : panelTitle()}</h1></div>
+      <div><p class="eyebrow">Passbook</p><h1 tabindex="-1">${activePanel === 'due' ? 'What needs care next' : panelTitle()}</h1></div>
       <div class="counter-panel" aria-label="Passbook summary"><span><b>${String(state.assets.length).padStart(2, '0')}</b> assets</span><span><b>${String(overdueCount).padStart(2, '0')}</b> overdue</span><i aria-hidden="true" class="gauge ${overdueCount ? 'gauge-alert' : ''}"></i></div>
     </section>
     <nav class="app-tabs" aria-label="Passbook sections">
@@ -245,7 +245,7 @@ function legalPage(type: 'privacy' | 'terms'): string {
 }
 
 function notFound(): string {
-  return shell(`<section class="not-found"><div class="error-dial" aria-hidden="true"><span>404</span><i></i></div><p class="eyebrow">Wrong panel</p><h1 tabindex="-1">This page is not in the passbook</h1><p>The address may be old or mistyped.</p><a class="button primary" href="/" data-link>Return home</a></section>`);
+  return shell(`<section class="not-found"><div class="error-dial" aria-hidden="true"><span>404</span><i></i></div><p class="eyebrow">Page not found</p><h1 tabindex="-1">This page is not in the passbook</h1><p>The address may be old or mistyped.</p><a class="button primary" href="/" data-link>Return home</a></section>`);
 }
 
 async function render(focus = false): Promise<void> {

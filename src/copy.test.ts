@@ -16,6 +16,17 @@ describe('reviewed product copy', () => {
     for (const removed of ['filled service log', 'empty passbook', 'The product itself', 'service trail', 'Clear boundaries']) expect(app).not.toContain(removed);
   });
 
+  it('keeps reviewed labels literal and uses passbook as the only document name', () => {
+    const static404 = readFileSync('public/404.html', 'utf8');
+    expect(app).toContain('<p class="eyebrow">Passbook</p>');
+    expect(app).toContain('<span>Service record</span>');
+    expect(app).toContain('<p class="eyebrow">Page not found</p>');
+    for (const removed of ['Household ledger', 'Wrong panel', 'HOME / 01', 'Original generated artwork.']) {
+      expect(app).not.toContain(removed);
+      expect(static404).not.toContain(removed);
+    }
+  });
+
   it('removes the reviewed README jargon and unsupported statements', () => {
     for (const removed of [
       'durable maintenance record', 'offline-first PWA', 'completion-relative recurrence',
@@ -28,6 +39,6 @@ describe('reviewed product copy', () => {
   it('keeps the catalog line verb-first and within 120 characters', () => {
     const catalog = readFileSync('.factory/catalog-description.txt', 'utf8').trim();
     expect(catalog.length).toBeLessThanOrEqual(120);
-    expect(catalog).toMatch(/^Track\b/);
+    expect(catalog).toMatch(/^(Record|Track)\b/);
   });
 });

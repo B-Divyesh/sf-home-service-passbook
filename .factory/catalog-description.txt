@@ -1,1 +1,1 @@
-Track recurring home care and keep service proof in a private offline passbook.
+Record recurring home service jobs and keep proof in a private offline passbook.
