@@ -1,12 +1,15 @@
 :root { color-scheme: light dark; font-family: "Avenir Next", "Segoe UI", sans-serif; color: #202522; background: #f3ebd8; }
 * { box-sizing: border-box; }
-body { margin: 0; min-height: 100vh; display: grid; place-items: center; text-align: center; }
+body { margin: 0; min-height: 100vh; display: grid; grid-template-rows: auto 1fr auto; text-align: center; }
+header { min-height: 72px; padding: 12px clamp(20px, 5vw, 72px); border-bottom: 2px solid currentColor; display: flex; align-items: center; justify-content: space-between; text-align: left; }
+header nav { display: flex; gap: 24px; }.brand { color: inherit; font: 700 .7rem/1.1 Rockwell, "Courier New", serif; letter-spacing: .1em; text-decoration: none; }header a:not(.brand), footer a { color: #176d68; font-weight: 700; }
 main { padding: 32px; max-width: 680px; }
 h1 { margin: 10px auto 16px; max-width: 12ch; font: 700 clamp(2.5rem, 8vw, 4.5rem)/1.05 Rockwell, "Courier New", serif; }
 p { font-size: 1.05rem; }
 .label { color: #176d68; font-size: .8rem; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; }
-a { min-height: 48px; margin-top: 16px; padding: 10px 18px; border: 2px solid #202522; border-radius: 7px; display: inline-flex; align-items: center; color: #fff; background: #c94f2d; box-shadow: 3px 3px 0 #202522; font-weight: 800; text-decoration: none; }
+.button { min-height: 48px; margin-top: 16px; padding: 10px 18px; border: 2px solid #202522; border-radius: 7px; display: inline-flex; align-items: center; color: #fff; background: #c94f2d; box-shadow: 3px 3px 0 #202522; font-weight: 800; text-decoration: none; }
 a:focus-visible { outline: 3px solid #176d68; outline-offset: 3px; }
 .dial { position: relative; width: 150px; height: 150px; margin: 0 auto 28px; border: 10px solid #28312e; border-radius: 50%; display: grid; place-items: center; background: #fff9ea; box-shadow: 7px 7px 0 #71786f; }
 .dial span { font: 700 2.1rem Rockwell, "Courier New", serif; }.dial i { position: absolute; left: 70px; top: 14px; width: 4px; height: 52px; background: #c94f2d; transform: rotate(120deg); transform-origin: 50% 100%; }
+footer { padding: 24px; border-top: 2px solid currentColor; font-size: .85rem; }
 @media (prefers-color-scheme: dark) { :root { color: #f5eedc; background: #171b1a; }.label { color: #63c7bb; }a { color: #171b1a; background: #f47a51; border-color: #f5eedc; box-shadow-color: #7e8981; } }

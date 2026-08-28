@@ -38,6 +38,7 @@ function shell(content: string): string {
         </nav>
       </header>
       ${isDemo() ? demoBanner() : ''}
+      ${navigator.onLine ? '' : '<div class="offline-banner" role="status">Offline — saved records remain available.</div>'}
       <main id="main" tabindex="-1">${content}</main>
       <footer class="site-footer">
         <p><strong>Home Service Passbook</strong><br>Household-owned maintenance records.</p>
@@ -189,8 +190,10 @@ function backupPanel(): string {
 
 function licensePanel(): string {
   const licensed = hasValidCachedLicense();
+  const inactive = Boolean(localStorage.getItem('sb_license:home-service-passbook')) && !licensed;
   return `<div class="license-panel">
     <div><p class="eyebrow">One-time purchase</p><h2>${licensed ? 'House Key is active' : 'Add unlimited assets and photos'}</h2><p>${licensed ? 'This browser can add unlimited assets and attach photos to service entries.' : 'Free passbooks hold five assets. A $19 House Key removes that limit and adds local photo attachments.'}</p></div>
+    ${inactive ? '<p class="locked-note">This license is no longer active. Paste another license or buy a new House Key.</p>' : ''}
     ${licensed ? '<p class="license-active"><span aria-hidden="true">●</span> License active</p>' : `<a class="button primary" href="https://api.sociobot.in/api/v1/products/home-service-passbook/checkout">Buy House Key — $19</a>
     <form id="license-form"><label for="license-token">Have a license? Paste it here</label><div><input id="license-token" name="license" autocomplete="off" required><button class="button secondary" type="submit">Verify license</button></div><p class="form-message" aria-live="polite"></p></form>`}
     <p class="fine-print">Sociobot/Dodo is the merchant of record. Refunds are handled there. A refund revokes the license.</p>
@@ -236,6 +239,8 @@ function notFound(): string {
 
 async function render(focus = false): Promise<void> {
   const path = window.location.pathname.replace(/\/$/, '') || '/';
+  const canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+  if (canonical) canonical.href = `https://home-service-passbook.sociobot.in${path}`;
   if (path === '/demo') {
     state = await enterDemo();
     activePanel = (new URLSearchParams(location.search).get('panel') as typeof activePanel) || 'due';
@@ -299,6 +304,7 @@ function bindEvents(): void {
 function openDialog(id: string): void {
   if (id === 'asset-dialog' && state.assets.length >= 5 && !hasValidCachedLicense()) {
     activePanel = 'license';
+    history.pushState({}, '', '/app?panel=license');
     void render(true);
     showToast('The free passbook holds five assets. House Key removes the limit.');
     return;
@@ -401,19 +407,15 @@ async function restoreLicense(event: SubmitEvent): Promise<void> {
   } catch { formError(form, 'The license service could not be reached. Check your connection and try again.'); }
 }
 
-async function captureReturnedLicense(): Promise<void> {
+function captureReturnedLicense(): void {
   const params = new URLSearchParams(location.search);
   const token = params.get('license');
   if (!token) return;
   localStorage.setItem('sb_license:home-service-passbook', token);
+  localStorage.setItem('sb_license_verdict:home-service-passbook', JSON.stringify({ valid: true, checkedAt: 0 }));
   params.delete('license');
   const query = params.toString();
   history.replaceState({}, '', `${location.pathname}${query ? `?${query}` : ''}`);
-  try {
-    const response = await fetch(`https://api.sociobot.in/api/v1/products/home-service-passbook/verify?license=${encodeURIComponent(token)}`);
-    const verdict = await response.json() as { valid: boolean };
-    localStorage.setItem('sb_license_verdict:home-service-passbook', JSON.stringify({ valid: verdict.valid, checkedAt: Date.now() }));
-  } catch { /* The free app never waits for license verification. */ }
 }
 
 async function recheckLicense(): Promise<void> {
@@ -425,6 +427,7 @@ async function recheckLicense(): Promise<void> {
     const response = await fetch(`https://api.sociobot.in/api/v1/products/home-service-passbook/verify?license=${encodeURIComponent(token)}`);
     const verdict = await response.json() as { valid: boolean };
     localStorage.setItem('sb_license_verdict:home-service-passbook', JSON.stringify({ valid: verdict.valid, checkedAt: Date.now() }));
+    if (!verdict.valid && activePanel === 'license') await render();
   } catch { /* Keep the cached state while offline. */ }
 }
 
@@ -452,9 +455,14 @@ async function registerServiceWorker(): Promise<void> {
 }
 
 void (async () => {
-  await captureReturnedLicense();
-  await recheckLicense();
-  await render();
-  await registerServiceWorker();
-  void installPrompt;
+  try {
+    captureReturnedLicense();
+    await render();
+    void recheckLicense();
+    await registerServiceWorker();
+    void installPrompt;
+  } catch {
+    root.innerHTML = shell('<section class="empty-state"><span class="empty-stamp" aria-hidden="true">!</span><h1 tabindex="-1">This passbook could not open</h1><p>Browser storage is unavailable. Allow site storage, then reload this page.</p><button class="button primary" data-action="reload">Reload passbook</button></section>');
+    root.querySelector('[data-action="reload"]')?.addEventListener('click', () => location.reload());
+  }
 })();
