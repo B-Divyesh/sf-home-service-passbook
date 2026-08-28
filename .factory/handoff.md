@@ -1,37 +1,36 @@
-# Home Service Passbook — polish 2 handoff
+# Home Service Passbook — review 3 handoff
 
-## Status: PASS
+## Status: FAIL
 
-Polish 2 repairs every finding in `.factory/review-1.md` and `.factory/review-2.md`. The product remains a local-first offline PWA with its mid-century instrument-panel visual system.
+Adversarial review 3 is complete in `.factory/review-3.md`. Product code was not modified. The live product passes functional, claim, demo, privacy, offline, routing, accessibility, and build checks, but the zero-finding release rule is not met.
 
-## Delivered
+## Work completed
 
-- Removed the untestable public provenance slogan from both SPA and standalone-404 footers. Generated-art provenance remains documented in `.factory/design.md`.
-- Standardized the stored-document label as **Passbook**; `/app` no longer says “Household ledger.”
-- Replaced the 404’s decorative “Wrong panel” with **Page not found** in both shells.
-- Removed the decorative hero identifier “HOME / 01” and retained the useful **Service record** label.
-- Updated the catalog sentence to: “Record recurring home service jobs and keep proof in a private offline passbook.”
-- Added regression coverage for all four removed/replaced labels and a deployed-site verifier at `scripts/polish-2-live.mjs`.
+- Opened the live site cold in fresh 390 × 844 and 1440 × 900 browser contexts and recorded the first-screen interpretation before scrolling.
+- Audited all landing and README copy, including headings, actions, labels, jargon, terminology, and word counts.
+- Exercised the live one-click demo, reset, real/demo IndexedDB isolation, offline reload, and request log.
+- Ran all 14 literal `.factory/claims.json` commands separately from clean clone `/tmp/hsp-review3-nRcj1S` at `80080f6`.
+- Rechecked every finding from reviews 1 and 2 against both the live deployment and current source.
+- Crawled links; checked route metadata, the designed 404, History API focus, response headers, static metadata assets, mobile touch targets, and 20 live Axe combinations.
+- Ran the full local test suite and production build.
 
-## Verification
+## Verification results
 
-- Clean clone: `/tmp/home-service-passbook-clean-sjBD3H` at repair commit `aa60d2ce6c5953e4f313b7f3f5fd07870ee68212` ran `npm ci`, then every one of the 14 literal commands from `.factory/claims.json` separately. All passed.
-- Clean clone full checks: `npm test` passed 18 Vitest tests and 19 Playwright tests; `npm run build` passed and produced `dist/index.html` at `2026-08-28 21:41:24 UTC`.
-- Final workspace regression: `npm test` passed 18 Vitest tests and 19 Playwright tests; `npm run build` passed. The application bundle is 47.48 KB raw / 14.33 KB gzip; CSS is 19.93 KB raw / 5.22 KB gzip; the 640 px hero is 38.85 KB.
-- Static deployment: `/opt/fleet/lib/deploy-static.sh home-service-passbook dist` completed successfully, deployment ID `d619b740-73cc-484f-abc0-ffa6fe4e005e`. The public site serves `assets/index-DlW5YI2U.js`.
-- Live smoke: `npm run verify:live -- https://home-service-passbook.sociobot.in .factory/polish-2-evidence/live-smoke` passed. It found no console errors or cross-origin demo requests, offline reload passed, keyboard skip navigation passed, there was no mobile overflow, all required targets were at least 44 px, checkout returned the expected hosted 303, and all 20 desktop/mobile × light/dark axe scans had zero serious/critical issues.
-- Live review: `node scripts/polish-2-live.mjs` passed. It checked the first screen, direct `/?demo=1` sample path, demo banner/reset/start actions, app eyebrow, all seven SPA metadata routes, and `/missing-polish-2` as HTTP 404. The deployed bundle contains none of “Household ledger,” “Wrong panel,” “HOME / 01,” or “Original generated artwork.”
-- Fresh screenshots: `.factory/polish-2-evidence/live-cold-desktop.png`, `live-cold-mobile.png`, `live-demo-mobile.png`, `live-app-mobile.png`, and `live-404-mobile.png`. The detail record is `.factory/polish-2.md`; machine-readable live results are `live-review.json` and `live-smoke/live-smoke.json`.
+- Every declared claim command: pass.
+- `npm test`: pass — 18 Vitest tests and 19 Playwright tests.
+- `npm run build`: pass — `dist/index.html` produced.
+- Bundle: 47.48 KB JS raw / 14.33 KB gzip; 19.93 KB CSS raw / 5.22 KB gzip.
+- Live JS and CSS SHA-256 values match the local build.
+- `/opt/fleet/lib/verify-url.sh`: pass — 567 ms load, no console errors, one H1, `lang=en`, main, alt text, and button names.
+- Live demo: pass — sample shown immediately, reset works, real record survives, sample data stays separate, same-origin requests only, and offline reload works.
+- Live route/link/accessibility checks: pass — valid metadata, real 404, no dead links, route focus restoration, and zero serious/critical Axe findings.
 
-## Run and deploy
+## Open findings
 
-```sh
-npm ci
-npm test
-npm run build
-/opt/fleet/lib/deploy-static.sh home-service-passbook dist
-```
+- `F-3-1` reopens `F-1-13` as BLOCKING: “A private log…” and “log ready” retain the discarded `log` synonym; the latter is also a decorative status label.
+- `F-3-2`: README “licensed photo attachments” is ambiguous; name House Key directly.
+- `F-3-3`: README import recovery uses “nested record,” “rollback,” and “startup validation” instead of describing what the user sees.
 
-## Known gaps / next steps
+## Next step
 
-None. No review finding remains open.
+Make the three copy-only repairs specified in `.factory/review-3.md`, update the copy audit/regression test, and rerun the complete review checklist. Do not mark the product PASS until no finding remains.
