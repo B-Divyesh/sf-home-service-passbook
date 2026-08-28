@@ -204,6 +204,8 @@ test('mobile first screen and keyboard path work', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+  await expect(page.locator('.hero-instrument img')).toHaveJSProperty('currentSrc', 'http://127.0.0.1:4173/assets/hero-640.webp');
+  expect(await page.evaluate(() => performance.getEntriesByType('resource').some((entry) => entry.name.endsWith('/assets/hero-1200.webp')))).toBe(false);
   await page.keyboard.press('Tab');
   await expect(page.getByText('Skip to main content')).toBeFocused();
   for (const target of [page.getByLabel('Home Service Passbook home'), page.getByRole('link', { name: 'Restore a license' }), page.getByRole('contentinfo').getByRole('link', { name: 'Privacy' }), page.getByRole('contentinfo').getByRole('link', { name: 'Terms' })]) {
@@ -212,6 +214,12 @@ test('mobile first screen and keyboard path work', async ({ page }) => {
   }
   const termsBox = await page.getByRole('contentinfo').getByRole('link', { name: 'Terms' }).boundingBox();
   expect(termsBox?.width).toBeGreaterThanOrEqual(44);
+  for (const [path, name] of [['/privacy', 'privacy@sociobot.in'], ['/terms', 'support@sociobot.in']] as const) {
+    await page.goto(path);
+    const box = await page.getByRole('link', { name }).boundingBox();
+    expect(box?.width, `${path} email width`).toBeGreaterThanOrEqual(44);
+    expect(box?.height, `${path} email height`).toBeGreaterThanOrEqual(44);
+  }
   await page.goto('/demo');
   for (const name of ['Reset demo', 'Start for real']) {
     const box = await page.getByRole('button', { name }).boundingBox();
@@ -385,6 +393,31 @@ test('@claim:refund-revocation an inactive license verdict locks House Key featu
 
 test('@claim:record-corrections future work is rejected and existing records can be corrected', async ({ page }) => {
   await page.goto('/demo');
+  await page.evaluate(async () => {
+    const db = await new Promise<IDBDatabase>((resolve, reject) => {
+      const request = indexedDB.open('demo:home-service-passbook', 1);
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+    const state = await new Promise<any>((resolve, reject) => {
+      const transaction = db.transaction('passbook', 'readonly');
+      const request = transaction.objectStore('passbook').get('state');
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+    state.assets.push(
+      { id: 'asset-limit-4', areaId: state.areas[0].id, name: 'Sump pump', makeModel: '', installedOn: '', createdAt: '2026-08-28T12:00:00.000Z' },
+      { id: 'asset-limit-5', areaId: state.areas[0].id, name: 'Dehumidifier', makeModel: '', installedOn: '', createdAt: '2026-08-28T12:00:00.000Z' }
+    );
+    await new Promise<void>((resolve, reject) => {
+      const transaction = db.transaction('passbook', 'readwrite');
+      transaction.objectStore('passbook').put(state, 'state');
+      transaction.oncomplete = () => resolve();
+      transaction.onerror = () => reject(transaction.error);
+    });
+    db.close();
+  });
+  await page.reload();
   await page.getByRole('button', { name: 'Record completed work' }).click();
   await page.getByLabel('Completed on').fill('2099-12-31');
   await page.getByRole('button', { name: 'Save service entry' }).click();
@@ -418,6 +451,45 @@ test('@claim:record-corrections future work is rejected and existing records can
   await expect(page.getByText('Corrected service note.')).toHaveCount(0);
   await page.reload();
   await expect(page.getByText('Corrected service note.')).toHaveCount(0);
+});
+
+test('a failed IndexedDB write keeps the asset form open and preserves the entered record for retry', async ({ page }) => {
+  await page.goto('/app');
+  await page.getByRole('button', { name: 'Add an asset' }).click();
+  await page.getByLabel('Area').fill('Basement');
+  await page.getByLabel('Asset name').fill('Boiler');
+  await page.evaluate(() => {
+    const target = window as typeof window & { restorePassbookPut?: () => void };
+    const original = IDBObjectStore.prototype.put;
+    target.restorePassbookPut = () => { IDBObjectStore.prototype.put = original; };
+    IDBObjectStore.prototype.put = function () { throw new DOMException('Injected write failure', 'QuotaExceededError'); };
+  });
+  await page.getByRole('button', { name: 'Save asset' }).click();
+  await expect(page.getByRole('dialog')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Add an asset' })).toBeVisible();
+  await expect(page.getByText('The record could not be saved. Check browser storage, then try again.')).toBeVisible();
+  await expect(page.getByLabel('Area')).toHaveValue('Basement');
+  await expect(page.getByLabel('Asset name')).toHaveValue('Boiler');
+  await expect(page.getByRole('heading', { name: 'Add a recurring job' })).toHaveCount(0);
+  expect(await page.evaluate(async () => {
+    const db = await new Promise<IDBDatabase>((resolve, reject) => {
+      const request = indexedDB.open('home-service-passbook', 1);
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+    const saved = await new Promise<any>((resolve, reject) => {
+      const request = db.transaction('passbook', 'readonly').objectStore('passbook').get('state');
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+    db.close();
+    return saved?.assets?.length ?? 0;
+  })).toBe(0);
+  await page.evaluate(() => (window as typeof window & { restorePassbookPut?: () => void }).restorePassbookPut?.());
+  await page.getByRole('button', { name: 'Save asset' }).click();
+  await expect(page.getByRole('heading', { name: 'Add a recurring job' })).toBeVisible();
+  await page.getByRole('button', { name: 'Close dialog' }).click();
+  await expect(page.getByRole('heading', { name: 'Boiler' })).toBeVisible();
 });
 
 test('@claim:print-history service history opens the browser print path', async ({ page }) => {

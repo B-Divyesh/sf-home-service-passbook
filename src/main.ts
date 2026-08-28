@@ -7,6 +7,7 @@ const root = document.querySelector<HTMLDivElement>('#app')!;
 let state: AppState = { areas: [], assets: [], tasks: [], completions: [] };
 let activePanel: 'due' | 'assets' | 'history' | 'backup' | 'license' = 'due';
 let toastTimer = 0;
+let pendingToast = '';
 let installPrompt: Event | null = null;
 
 const PRODUCT_SLUG = 'home-service-passbook';
@@ -51,7 +52,7 @@ function shell(content: string): string {
       <footer class="site-footer">
         <p><strong>Home Service Passbook</strong><br>Household-owned maintenance records.</p>
         <div><a href="/privacy" data-link>Privacy</a><a href="/terms" data-link>Terms</a></div>
-        <p>Built by Param Factory · v1.0.1<br>Original generated artwork.</p>
+        <p>Built by Param Factory · v1.0.2<br>Original generated artwork.</p>
       </footer>
       <div class="route-status sr-only" aria-live="polite"></div>
       <div class="toast" role="status" aria-live="polite" hidden></div>
@@ -86,6 +87,7 @@ function landing(): string {
       <div class="hero-instrument">
         <div class="instrument-label"><span>SERVICE RECORD</span><strong>HOME / 01</strong></div>
         <picture>
+          <source media="(max-width: 760px)" type="image/webp" srcset="/assets/hero-640.webp">
           <source type="image/webp" srcset="/assets/hero-640.webp 640w, /assets/hero-1200.webp 1200w" sizes="(max-width: 760px) 100vw, 50vw">
           <img src="/assets/hero-1200.webp" width="1200" height="800" fetchpriority="high" decoding="async" alt="A furnace filter, service tag, receipt, screwdriver, and maintenance dial arranged on a workbench.">
         </picture>
@@ -203,7 +205,7 @@ function licensePanel(): string {
     <div><p class="eyebrow">One-time purchase</p><h2>${licensed ? 'House Key is active' : 'Add unlimited assets and photos'}</h2><p>${licensed ? 'This browser can add unlimited assets and attach photos to service entries.' : 'Free passbooks hold five assets. A $19 House Key removes that limit and adds local photo attachments.'}</p></div>
     ${inactive ? '<p class="locked-note">This license is no longer active. Paste another license or buy a new House Key.</p>' : ''}
     ${licensed ? '<p class="license-active"><span aria-hidden="true">●</span> License active</p>' : `<a class="button primary" href="${CHECKOUT_URL}">Buy House Key — $19</a>
-    <form id="license-form"><label for="license-token">Have a license? Paste it here</label><div><input id="license-token" name="license" autocomplete="off" required><button class="button secondary" type="submit">Verify license</button></div><p class="form-message" aria-live="polite"></p></form>`}
+    <form id="license-form"><label for="license-token">Have a license? Paste it here</label><div><input id="license-token" name="license" autocomplete="off" required><button class="button secondary" type="submit">Verify license</button></div><p class="form-message" role="status" aria-live="polite"></p></form>`}
     <p class="fine-print">Sociobot/Dodo is the merchant of record. Refunds are handled there. A refund revokes the license.</p>
   </div>`;
 }
@@ -219,20 +221,20 @@ function dialogs(): string {
     <label for="asset-name">Asset name</label><input id="asset-name" name="asset" required maxlength="80" placeholder="Furnace">
     <label for="model-name">Make or model <span>optional</span></label><input id="model-name" name="model" maxlength="100">
     <label for="installed-on">Installed on <span>optional</span></label><input id="installed-on" name="installed" type="date">
-    <p class="form-message" aria-live="polite"></p><div class="dialog-actions"><button class="button secondary" type="button" data-close>Cancel</button><button class="button primary" type="submit">Save asset</button></div></form></dialog>
+    <p class="form-message" role="status" aria-live="polite"></p><div class="dialog-actions"><button class="button secondary" type="button" data-close>Cancel</button><button class="button primary" type="submit">Save asset</button></div></form></dialog>
     <dialog id="task-dialog"><form method="dialog" id="task-form"><div class="dialog-head"><h2>Add a recurring job</h2><button class="icon-button" type="button" data-close aria-label="Close dialog">×</button></div>
       <label for="task-asset">Asset</label><select id="task-asset" name="asset" required>${options}</select>
       <label for="task-name">Job name</label><input id="task-name" name="name" required maxlength="90" placeholder="Replace air filter">
       <fieldset><legend>Repeat rule</legend><label class="radio"><input type="radio" name="mode" value="calendar" checked><span><strong>Repeat every</strong><small>Keep fixed calendar dates, even when work is late.</small></span></label><label class="radio"><input type="radio" name="mode" value="completion"><span><strong>Repeat after completion</strong><small>Start the next interval when work is recorded.</small></span></label></fieldset>
       <div class="field-row"><label for="interval">Months between jobs<input id="interval" name="interval" type="number" min="1" max="120" value="6" required></label><label for="start-date">First due date<input id="start-date" name="start" type="date" value="${todayISO()}" required></label></div>
-      <p class="form-message" aria-live="polite"></p><div class="dialog-actions"><button class="button secondary" type="button" data-close>Cancel</button><button class="button primary" type="submit">Save recurring job</button></div></form></dialog>
+      <p class="form-message" role="status" aria-live="polite"></p><div class="dialog-actions"><button class="button secondary" type="button" data-close>Cancel</button><button class="button primary" type="submit">Save recurring job</button></div></form></dialog>
     <dialog id="completion-dialog"><form method="dialog" id="completion-form"><div class="dialog-head"><h2>Record completed work</h2><button class="icon-button" type="button" data-close aria-label="Close dialog">×</button></div>
       <label for="complete-task">Job</label><select id="complete-task" name="task" required>${state.tasks.map((task) => `<option value="${task.id}">${escapeHtml(task.name)}</option>`).join('')}</select>
       <label for="completed-on">Completed on</label><input id="completed-on" name="date" type="date" value="${todayISO()}" required>
       <label for="work-note">What was done <span>optional</span></label><textarea id="work-note" name="note" rows="3" maxlength="500"></textarea>
       <label for="receipt-ref">Receipt or invoice reference <span>optional</span></label><input id="receipt-ref" name="receipt" maxlength="120">
       ${hasValidCachedLicense() ? '<label for="proof-file">Photo or receipt file <span>optional, 3 MB maximum</span></label><input id="proof-file" name="proof" type="file" accept="image/*,application/pdf"><label class="remove-attachment" hidden><input name="removeProof" type="checkbox"> Remove the saved attachment</label>' : '<p class="locked-note">House Key adds local photo attachments. Notes and receipt references stay free.</p>'}
-      <p class="form-message" aria-live="polite"></p><div class="dialog-actions"><button class="button secondary" type="button" data-close>Cancel</button><button class="button primary" type="submit">Save service entry</button></div></form></dialog>`;
+      <p class="form-message" role="status" aria-live="polite"></p><div class="dialog-actions"><button class="button secondary" type="button" data-close>Cancel</button><button class="button primary" type="submit">Save service entry</button></div></form></dialog>`;
 }
 
 function legalPage(type: 'privacy' | 'terms'): string {
@@ -260,6 +262,11 @@ async function render(focus = false): Promise<void> {
   document.title = titles[path] ?? titles['/404'];
   root.innerHTML = path === '/' ? landing() : path === '/privacy' ? legalPage('privacy') : path === '/terms' ? legalPage('terms') : path === '/demo' || path === '/app' || path === '/history' || path === '/backup' ? appPage() : notFound();
   bindEvents();
+  if (pendingToast) {
+    const message = pendingToast;
+    pendingToast = '';
+    showToast(message);
+  }
   if (focus) {
     const heading = root.querySelector<HTMLElement>('h1');
     heading?.focus();
@@ -409,11 +416,12 @@ async function deleteAsset(id: string): Promise<void> {
   const taskIds = new Set(state.tasks.filter((item) => item.assetId === id).map((item) => item.id));
   const entryCount = state.completions.filter((item) => taskIds.has(item.taskId)).length;
   if (!confirm(`Delete ${asset.name}, its ${taskIds.size} jobs, and ${entryCount} service entries?`)) return;
-  state.assets = state.assets.filter((item) => item.id !== id);
-  state.tasks = state.tasks.filter((item) => !taskIds.has(item.id));
-  state.completions = state.completions.filter((item) => !taskIds.has(item.taskId));
-  removeUnusedAreas();
-  await persist('Asset and its records deleted.');
+  const next = structuredClone(state);
+  next.assets = next.assets.filter((item) => item.id !== id);
+  next.tasks = next.tasks.filter((item) => !taskIds.has(item.id));
+  next.completions = next.completions.filter((item) => !taskIds.has(item.taskId));
+  removeUnusedAreas(next);
+  if (!await persist(next, 'Asset and its records deleted.')) return;
   await render();
 }
 
@@ -422,36 +430,39 @@ async function deleteTask(id: string): Promise<void> {
   if (!task) return;
   const entryCount = state.completions.filter((item) => item.taskId === id).length;
   if (!confirm(`Delete ${task.name} and its ${entryCount} service entries?`)) return;
-  state.tasks = state.tasks.filter((item) => item.id !== id);
-  state.completions = state.completions.filter((item) => item.taskId !== id);
-  await persist('Recurring job and its service entries deleted.');
+  const next = structuredClone(state);
+  next.tasks = next.tasks.filter((item) => item.id !== id);
+  next.completions = next.completions.filter((item) => item.taskId !== id);
+  if (!await persist(next, 'Recurring job and its service entries deleted.')) return;
   await render();
 }
 
 async function deleteCompletion(id: string): Promise<void> {
   const completion = state.completions.find((item) => item.id === id);
   if (!completion || !confirm(`Delete the service entry from ${formatDate(completion.completedOn)}?`)) return;
-  state.completions = state.completions.filter((item) => item.id !== id);
-  refreshLastCompleted(completion.taskId);
-  await persist('Service entry deleted.');
+  const next = structuredClone(state);
+  next.completions = next.completions.filter((item) => item.id !== id);
+  refreshLastCompleted(next, completion.taskId);
+  if (!await persist(next, 'Service entry deleted.')) return;
   await render();
 }
 
-function removeUnusedAreas(): void {
-  const used = new Set(state.assets.map((item) => item.areaId));
-  state.areas = state.areas.filter((item) => used.has(item.id));
+function removeUnusedAreas(target: AppState): void {
+  const used = new Set(target.assets.map((item) => item.areaId));
+  target.areas = target.areas.filter((item) => used.has(item.id));
 }
 
-function refreshLastCompleted(taskId: string): void {
-  const task = state.tasks.find((item) => item.id === taskId);
+function refreshLastCompleted(target: AppState, taskId: string): void {
+  const task = target.tasks.find((item) => item.id === taskId);
   if (!task) return;
-  const last = state.completions.filter((item) => item.taskId === taskId).sort((a, b) => b.completedOn.localeCompare(a.completedOn))[0];
+  const last = target.completions.filter((item) => item.taskId === taskId).sort((a, b) => b.completedOn.localeCompare(a.completedOn))[0];
   if (last) task.lastCompletedOn = last.completedOn;
   else delete task.lastCompletedOn;
 }
 
 function openDialog(id: string): void {
-  if (id === 'asset-dialog' && state.assets.length >= 5 && !hasValidCachedLicense()) {
+  const form = root.querySelector<HTMLFormElement>(`#${id} form`);
+  if (id === 'asset-dialog' && !form?.dataset.editId && state.assets.length >= 5 && !hasValidCachedLicense()) {
     activePanel = 'license';
     history.pushState({}, '', '/app?panel=license');
     void render(true);
@@ -468,15 +479,16 @@ async function addAsset(event: SubmitEvent): Promise<void> {
   const form = event.currentTarget as HTMLFormElement;
   const data = new FormData(form);
   const areaName = String(data.get('area')).trim();
-  let area = state.areas.find((item) => item.name.toLowerCase() === areaName.toLowerCase());
-  if (!area) { area = { id: uid('area'), name: areaName, createdAt: new Date().toISOString() }; state.areas.push(area); }
+  const next = structuredClone(state);
+  let area = next.areas.find((item) => item.name.toLowerCase() === areaName.toLowerCase());
+  if (!area) { area = { id: uid('area'), name: areaName, createdAt: new Date().toISOString() }; next.areas.push(area); }
   const editId = form.dataset.editId;
-  const existing = editId ? state.assets.find((item) => item.id === editId) : undefined;
+  const existing = editId ? next.assets.find((item) => item.id === editId) : undefined;
   const asset: Asset = { id: existing?.id ?? uid('asset'), areaId: area.id, name: String(data.get('asset')).trim(), makeModel: String(data.get('model')).trim(), installedOn: String(data.get('installed')), createdAt: existing?.createdAt ?? new Date().toISOString() };
-  if (existing) state.assets[state.assets.indexOf(existing)] = asset;
-  else state.assets.push(asset);
-  removeUnusedAreas();
-  await persist(existing ? 'Asset changes saved.' : 'Asset saved. Add its first recurring job.');
+  if (existing) next.assets[next.assets.indexOf(existing)] = asset;
+  else next.assets.push(asset);
+  removeUnusedAreas(next);
+  if (!await persist(next, existing ? 'Asset changes saved.' : 'Asset saved. Add its first recurring job.', form)) return;
   activePanel = 'assets';
   await render();
   if (existing) return;
@@ -489,13 +501,14 @@ async function addTask(event: SubmitEvent): Promise<void> {
   event.preventDefault();
   const form = event.currentTarget as HTMLFormElement;
   const data = new FormData(form);
+  const next = structuredClone(state);
   const editId = form.dataset.editId;
-  const existing = editId ? state.tasks.find((item) => item.id === editId) : undefined;
+  const existing = editId ? next.tasks.find((item) => item.id === editId) : undefined;
   const task: Task = { id: existing?.id ?? uid('task'), assetId: String(data.get('asset')), name: String(data.get('name')).trim(), mode: String(data.get('mode')) as Task['mode'], intervalMonths: Number(data.get('interval')), startDate: String(data.get('start')), createdAt: existing?.createdAt ?? new Date().toISOString() };
   if (existing?.lastCompletedOn) task.lastCompletedOn = existing.lastCompletedOn;
-  if (existing) state.tasks[state.tasks.indexOf(existing)] = task;
-  else state.tasks.push(task);
-  await persist(existing ? 'Recurring job changes saved.' : 'Recurring job saved.');
+  if (existing) next.tasks[next.tasks.indexOf(existing)] = task;
+  else next.tasks.push(task);
+  if (!await persist(next, existing ? 'Recurring job changes saved.' : 'Recurring job saved.', form)) return;
   activePanel = 'due';
   await render();
 }
@@ -513,17 +526,18 @@ async function completeTask(event: SubmitEvent): Promise<void> {
     return;
   }
   if (file && file.size > 3_000_000) return formError(form, 'The file is over 3 MB. Choose a smaller photo or PDF.');
+  const next = structuredClone(state);
   const editId = form.dataset.editId;
-  const existing = editId ? state.completions.find((item) => item.id === editId) : undefined;
+  const existing = editId ? next.completions.find((item) => item.id === editId) : undefined;
   const oldTaskId = existing?.taskId;
   const record: Completion = { id: existing?.id ?? uid('done'), taskId: String(data.get('task')), completedOn, note: String(data.get('note')).trim(), receiptRef: String(data.get('receipt')).trim(), createdAt: existing?.createdAt ?? new Date().toISOString() };
   if (existing?.attachment && data.get('removeProof') !== 'on') record.attachment = existing.attachment;
   if (file?.size) record.attachment = { name: file.name, type: file.type, dataUrl: await fileToDataUrl(file) };
-  if (existing) state.completions[state.completions.indexOf(existing)] = record;
-  else state.completions.push(record);
-  if (oldTaskId && oldTaskId !== record.taskId) refreshLastCompleted(oldTaskId);
-  refreshLastCompleted(record.taskId);
-  await persist(existing ? 'Service entry changes saved.' : 'Service entry saved. The next due date is updated.');
+  if (existing) next.completions[next.completions.indexOf(existing)] = record;
+  else next.completions.push(record);
+  if (oldTaskId && oldTaskId !== record.taskId) refreshLastCompleted(next, oldTaskId);
+  refreshLastCompleted(next, record.taskId);
+  if (!await persist(next, existing ? 'Service entry changes saved.' : 'Service entry saved. The next due date is updated.', form)) return;
   await render();
 }
 
@@ -531,8 +545,18 @@ function fileToDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => { const reader = new FileReader(); reader.onload = () => resolve(String(reader.result)); reader.onerror = () => reject(reader.error); reader.readAsDataURL(file); });
 }
 
-async function persist(message: string): Promise<void> {
-  try { await save(state); showToast(message); } catch { showToast('The record could not be saved. Check browser storage, then try again.'); }
+async function persist(next: AppState, message: string, form?: HTMLFormElement): Promise<boolean> {
+  try {
+    await save(next);
+    state = next;
+    pendingToast = message;
+    return true;
+  } catch {
+    const error = 'The record could not be saved. Check browser storage, then try again.';
+    if (form) formError(form, error);
+    else showToast(error);
+    return false;
+  }
 }
 
 function exportBackup(): void {

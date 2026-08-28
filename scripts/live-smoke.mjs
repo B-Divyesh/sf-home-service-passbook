@@ -6,7 +6,17 @@ const base = process.argv[2] || 'https://home-service-passbook.sociobot.in';
 const output = process.argv[3] || '.factory/repair-evidence/live';
 await mkdir(output, { recursive: true });
 const browser = await chromium.launch({ headless: true });
-const results = { base, consoleErrors: [], externalRequests: [], axe: [], touchTargets: {}, offline: false, keyboard: false, overflow: null };
+const checkoutUrl = 'https://api.sociobot.in/api/v1/products/home-service-passbook/checkout';
+const checkoutResponse = await fetch(checkoutUrl, { redirect: 'manual' });
+const checkoutLocation = checkoutResponse.headers.get('location');
+const results = {
+  base,
+  checkout: {
+    status: checkoutResponse.status,
+    hostedCheckout: checkoutLocation ? new URL(checkoutLocation).hostname === 'checkout.dodopayments.com' : false
+  },
+  consoleErrors: [], externalRequests: [], axe: [], touchTargets: {}, offline: false, keyboard: false, overflow: null
+};
 
 try {
   const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
@@ -50,7 +60,7 @@ try {
   }
   await writeFile(`${output}/live-smoke.json`, JSON.stringify(results, null, 2));
   console.log(JSON.stringify(results, null, 2));
-  if (results.consoleErrors.length || results.externalRequests.length || !results.offline || !results.keyboard || results.overflow !== 0 || Object.values(results.touchTargets).some((target) => typeof target === 'object' ? Number(target.width) < 44 || Number(target.height) < 44 : Number(target) < 44) || results.axe.some((item) => item.seriousOrCritical)) process.exitCode = 1;
+  if (results.checkout.status !== 303 || !results.checkout.hostedCheckout || results.consoleErrors.length || results.externalRequests.length || !results.offline || !results.keyboard || results.overflow !== 0 || Object.values(results.touchTargets).some((target) => typeof target === 'object' ? Number(target.width) < 44 || Number(target.height) < 44 : Number(target) < 44) || results.axe.some((item) => item.seriousOrCritical)) process.exitCode = 1;
 } finally {
   await browser.close();
 }
