@@ -1,0 +1,262 @@
+{
+  "checks": [
+    {
+      "name": "landing returns 200",
+      "pass": true,
+      "detail": "200"
+    },
+    {
+      "name": "landing title is plain and route-specific",
+      "pass": true,
+      "detail": "Home Service Passbook — Track home maintenance"
+    },
+    {
+      "name": "landing has one h1",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "landing has main landmark",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "headline states the job",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "first screen names households",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "sample demo action is visible",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "one click opens populated demo",
+      "pass": true,
+      "detail": "3 jobs"
+    },
+    {
+      "name": "demo banner is persistent",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "demo uses separate indexeddb namespace",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "real passbook starts empty",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "empty required asset is rejected",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "zero interval is rejected",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "interval above 120 is rejected",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "completion-relative job saves",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "future completion is rejected and focused",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "service note and receipt are in history",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "service record survives reload",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "completion-relative due date advances from completion",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "missed fixed-calendar work remains overdue",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "fixed-calendar completion stays anchored",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "asset correction persists",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "free boundary accepts exactly five assets",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "html-like record text is rendered as text",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "existing asset remains editable at free limit",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "sixth asset opens House Key panel",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "backup remains free at asset limit",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "nested malformed import gives a specific error",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "rejected import leaves existing records intact",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "exactly 3 MB attachment saves",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "attachment above 3 MB is rejected",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "export contains all record collections",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "export contains attachment data",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "storage failure keeps entered form open",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "storage failure can be retried successfully",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "mobile sample action is inside first viewport",
+      "pass": true,
+      "detail": "{\"x\":21,\"y\":494.625,\"width\":348,\"height\":50.796875}"
+    },
+    {
+      "name": "mobile landing has no horizontal overflow",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "first tab reaches skip link",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "focus indicator is visible",
+      "pass": true,
+      "detail": "{\"width\":\"3px\",\"style\":\"solid\",\"color\":\"rgb(23, 109, 104)\"}"
+    },
+    {
+      "name": "visible mobile interactive targets meet 44 px",
+      "pass": true,
+      "detail": "[]"
+    },
+    {
+      "name": "mobile demo does not overflow at 200% text",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "reduced motion removes movement",
+      "pass": true,
+      "detail": "{\"scroll\":\"auto\",\"transition\":\"1e-05s\",\"animations\":0}"
+    },
+    {
+      "name": "service worker controls the PWA",
+      "pass": true,
+      "detail": "{\"registrations\":1,\"caches\":[\"home-service-passbook-v4\"],\"controller\":\"https://home-service-passbook.sociobot.in/sw.js\"}"
+    },
+    {
+      "name": "versioned PWA cache exists",
+      "pass": true,
+      "detail": "[\"home-service-passbook-v4\"]"
+    },
+    {
+      "name": "offline reload retains demo records",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "full maintenance flow sends no cross-origin request",
+      "pass": true,
+      "detail": "[]"
+    },
+    {
+      "name": "no console errors",
+      "pass": true,
+      "detail": "[]"
+    },
+    {
+      "name": "no page errors",
+      "pass": true,
+      "detail": "[]"
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "outgoing": [
+    "https://home-service-passbook.sociobot.in/",
+    "https://home-service-passbook.sociobot.in/assets/index-BrCrBByi.js",
+    "https://home-service-passbook.sociobot.in/assets/index-v3kgqw0P.css",
+    "https://home-service-passbook.sociobot.in/assets/hero-1200.webp",
+    "https://home-service-passbook.sociobot.in/history",
+    "https://home-service-passbook.sociobot.in/assets/index-BrCrBByi.js",
+    "https://home-service-passbook.sociobot.in/assets/index-v3kgqw0P.css",
+    "https://home-service-passbook.sociobot.in/backup",
+    "https://home-service-passbook.sociobot.in/assets/index-BrCrBByi.js",
+    "https://home-service-passbook.sociobot.in/assets/index-v3kgqw0P.css",
+    "https://home-service-passbook.sociobot.in/app?panel=assets",
+    "https://home-service-passbook.sociobot.in/assets/index-BrCrBByi.js",
+    "https://home-service-passbook.sociobot.in/assets/index-v3kgqw0P.css"
+  ],
+  "smallTargets": []
+}

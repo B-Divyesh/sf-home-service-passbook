@@ -1,0 +1,9 @@
+{
+  "initialWorkerChanged": true,
+  "toast": "An update is ready. Reload to use it.",
+  "controller": "http://127.0.0.1:38249/sw.js",
+  "caches": [
+    "home-service-passbook-v4"
+  ],
+  "errors": []
+}

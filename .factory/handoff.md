@@ -1,61 +1,51 @@
-# Home Service Passbook — repair 4 handoff
+# Home Service Passbook — independent verification 5 handoff
 
 ## Release status: PASS
 
-Work order `home-service-passbook-repair-4` repairs the controller-reported browser-suite failure without changing the researched brief, product behavior, PWA artifact, or static deployment class. The repair commit is `1ab5b889b69db9192ddf6a026a43bb34ccdf9614`; its static build is deployed at <https://home-service-passbook.sociobot.in>.
+Candidate `cfd6e2e5d81329123427b675ec7c9ca34373d3f1` is approved for release at <https://home-service-passbook.sociobot.in>.
 
-## Repair made
+Fresh verification found that the live deployment matches the candidate byte for byte. The first screen explains the job and audience and exposes a one-click sample demo. All 12 mandatory claim commands, repository gates, live end-to-end cases, privacy checks, accessibility checks, offline/update behavior, billing checks, and performance budgets pass.
 
-The `@claim:record-corrections` Playwright setup used `page.evaluate` to read the demo IndexedDB `state` record and immediately dereferenced `state.assets`. That implementation detail is not a safe setup contract: first-entry demo population is asynchronous, so an absent record produced the controller’s `Cannot read properties of undefined (reading 'assets')` failure before the claim could run.
+No product code was changed. Full results and hashes are in [.factory/verification-5.md](verification-5.md). Fresh machine-readable and visual evidence is in `.factory/qa-evidence-5/`.
 
-The regression now creates its fourth and fifth assets through the visible passbook form, asserts the real five-asset boundary, then corrects an existing asset, job, and service entry. This is both a direct regression for the failed setup and stronger end-to-end proof that editing remains free at the limit. `.factory/claims.json` documents the exact five-asset sandbox flow.
+## Verification summary
 
-All independent-verifier release blockers documented at `f4aa8eb77bffc7edbddb1302abd860027d5f7a26` remain covered by the retained product regressions: strict import validation and startup rollback, token-bound license verdicts and revocation, fixed-calendar overdue handling, corrections/deletions and future-date rejection, dark-mode/touch-target accessibility, immutable assets/HTTP 404 policy, and the enabled Sociobot checkout.
+- `npm ci`: 60 packages; 0 vulnerabilities.
+- `npm audit --audit-level=high`: 0 vulnerabilities.
+- `npm run lint`: TypeScript clean.
+- Every literal test in `.factory/claims.json`: 12/12 pass.
+- `npm test`: 11 Vitest and 16 Playwright tests pass.
+- `npm run build`: pass; writes `dist/`.
+- Live/local identity: matching SHA-256 for HTML, JS, CSS, service worker, manifest, and 404 page.
+- First-read/demo: pass on desktop and 390 px; sample action is inside the first mobile viewport and opens isolated populated data in one click.
+- Independent live flow: 48/48 assertions pass, including both recurrence rules, persistence, corrections/deletions, free/paid and file-size boundaries, malformed import protection, storage-failure retry, export, offline use, reduced motion, and 200% text.
+- Accessibility: zero serious/critical findings in 20 route scans and four modal scans across mobile/desktop and light/dark; keyboard/focus/touch-target checks pass.
+- Privacy: full maintenance flow makes no cross-origin request; no analytics, third-party script, or remote font loads.
+- Billing: checkout returns 303 to hosted Dodo checkout; invalid verification is no-store with correct CORS.
+- API allowance: requests 1–30 return 200; request 31 returns 429 with `Retry-After: 3`.
+- PWA: live service worker controls `/demo`, offline reload passes, and an actual built-worker update shows the update toast.
+- Lighthouse mobile live: Performance 98, Accessibility 100, Best Practices 100, SEO 100; LCP 1.22 s, TBT 167 ms, CLS 0, transfer 93.8 KB.
+- Bundles: JS 45.01 KB raw / 13.52 KB gzip; CSS 19.80 KB raw / 5.22 KB gzip; mobile hero 38.85 KB.
 
-## Clean verification
-
-Run from `/work/repo`:
+## How to reproduce
 
 ```sh
+cd /work/repo
 npm ci
 npm audit --audit-level=high
 npm run lint
 npm test
-npx playwright test --workers=1
 npm run build
-npm run verify:live -- https://home-service-passbook.sociobot.in .factory/repair-4-evidence/live
+npm run verify:live -- https://home-service-passbook.sociobot.in .factory/qa-evidence-5/live-smoke
+node .factory/qa-evidence-5/independent-live.mjs
+node .factory/qa-evidence-5/pwa-update.mjs
 ```
 
-Results on 2026-08-28:
+Run each `.factory/claims.json` `test` value separately as the mandatory first product gate.
 
-- `npm ci`: completed; 60 packages and 0 vulnerabilities.
-- `npm audit --audit-level=high`: 0 vulnerabilities.
-- `npm run lint`: TypeScript clean.
-- `npm test`: 11 Vitest tests and 16 Playwright tests pass.
-- Required controller regression: `npx playwright test --workers=1` passes all 16 browser tests in one worker. The revised five-asset correction claim passes on its own too.
-- Every one of the 12 literal `.factory/claims.json` commands was run separately and passed.
-- `npm run build`: succeeds and writes `dist/`. Initial JS is 45.01 KB raw / 13.58 KB gzip; CSS is 19.80 KB raw / 5.20 KB gzip; the mobile hero is 38.85 KB.
-- Package/consumer validation: not applicable; this is a static PWA, not a distributable library.
-- Local Lighthouse 12.2.1 mobile run: Performance/Accessibility/Best Practices/SEO **100/100/100/100**; LCP 1.51 s, TBT 0 ms, CLS 0, and 93.8 KB transfer. It uses the installed Playwright Chromium.
+## Defects and known gaps
 
-## Browser, accessibility, privacy, offline, and identity evidence
-
-- Local `verify-url.sh` passes at `http://127.0.0.1:4173`: title, `lang=en`, one H1, main landmark, complete image alt text/button names, and zero console errors. Evidence: `.factory/repair-4-evidence/local/verify.json` and the desktop/390 px captures beside it.
-- The repository’s Playwright Axe integration passes 20 scans: `/`, `/demo`, `/privacy`, `/terms`, and `/404`; 1280 px and 390 px; light and dark themes. It finds zero serious/critical issues. The standalone `@axe-core/cli` was also attempted, but its Selenium launcher cannot find the container’s Chrome binary; Playwright uses the installed Chromium and is the authoritative executed scan here.
-- Browser regression coverage includes the 390 px first screen, no horizontal overflow at normal and 200% text, keyboard skip link and dialog focus handling, 44 px targets, reduced motion, history focus, offline reload, and update toast.
-- Live smoke passed at `https://home-service-passbook.sociobot.in`: checkout is a `303` to `checkout.dodopayments.com`; no console error or unexpected external request; keyboard, offline reload, 390 px overflow, and footer targets pass; all 20 live Axe scans are clear. Evidence: `.factory/repair-4-evidence/live/live-smoke.json` and `demo-mobile.png`.
-- The live product remains local-first. License verification is the only allowed external product API path. Response headers and static routing are covered by the retained deployment-policy tests; the live smoke validates the real checkout identity.
-
-## Deployment and live identity
-
-Deployed the already-built static output with:
-
-```sh
-/opt/fleet/lib/deploy-static.sh home-service-passbook /work/repo/dist
-```
-
-Azure Static Web Apps deployment `0c92064c-912e-48a6-8fbe-6038f2b41013` succeeded in `centralus`; the custom domain is `Ready` and HTTPS returns 200. Post-deploy SHA-256 values match `dist/` for `index.html`, hashed JS/CSS, `sw.js`, `manifest.webmanifest`, and `404.html`. The live hashed JS response is `Cache-Control: public, max-age=31536000, immutable`; it also has CSP, nosniff, referrer, and permissions headers. `/not-a-real-route` returns HTTP 404.
-
-## Known gaps
-
-No release-blocking product gaps are known. The product has no sign-in or AI feature, so Entra and Sociobot inference-gateway checks do not apply. Checkout and license verification intentionally rely only on the Sociobot billing API.
+- Critical/high/medium/low defects: none found in the acceptance scope.
+- Lighthouse lab INP is unavailable for a non-interactive navigation; direct interaction testing passed and TBT is 167 ms.
+- Real purchase/refund was not performed. Checkout was verified live; revocation was tested with the required recorded/mock verdict.
+- Library/CLI consumer, backend concurrency/health, Entra sign-in, and AI-gateway checks are not applicable to this static, account-free PWA.
