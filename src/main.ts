@@ -79,7 +79,7 @@ function landing(): string {
           <a class="button primary" href="/?demo=1" data-link>Try it with sample data</a>
           <a class="button secondary" href="/app" data-link>Start my passbook</a>
         </div>
-        <p class="action-note">The demo opens a filled service history. Starting for real opens your passbook.</p>
+        <p class="action-note">The demo opens with a sample record due next. Starting for real opens your passbook.</p>
         <ul class="plain-facts" aria-label="Product facts">
           <li><span aria-hidden="true">●</span> Works offline after the first visit</li>
           <li><span aria-hidden="true">●</span> Records stay in this browser</li>

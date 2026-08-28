@@ -18,7 +18,7 @@ Audited 2026-08-28 after the fourth polish repair. This table includes every sta
 | For households tracking recurring care, service dates, notes, and receipts without another appliance account. | 14 | Hero sentence | Pass |
 | Try it with sample data | 5 | Primary action | Pass |
 | Start my passbook | 3 | Secondary action | Pass |
-| The demo opens a filled service history. | 7 | Action explanation | Pass |
+| The demo opens with a sample record due next. | 9 | Action explanation | Pass |
 | Starting for real opens your passbook. | 6 | Action explanation | Pass |
 | Works offline after the first visit | 6 | Product fact | Pass |
 | Records stay in this browser | 5 | Product fact | Pass |

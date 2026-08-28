@@ -7,7 +7,7 @@ describe('reviewed product copy', () => {
 
   it('uses the approved first-screen and section wording', () => {
     for (const wording of [
-      'The demo opens a filled service history. Starting for real opens your passbook.',
+      'The demo opens with a sample record due next. Starting for real opens your passbook.',
       'Private home maintenance passbook.',
       '<span><b>04</b> service entries</span>',
       'Sample service schedule',

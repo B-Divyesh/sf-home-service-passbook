@@ -43,7 +43,7 @@ try {
   });
   await context.setOffline(true);
   await page.reload();
-  results.offline = await page.getByRole('heading', { name: 'Replace air filter' }).isVisible();
+  results.offline = await page.locator('[data-task-row]').filter({ hasText: 'Replace air filter' }).isVisible();
   await context.close();
 
   for (const width of [1280, 390]) {
