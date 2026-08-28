@@ -8,6 +8,7 @@
     "build": "tsc --noEmit && vite build && node scripts/build-pages.mjs",
     "lint": "tsc --noEmit",
     "preview": "vite preview --host 0.0.0.0",
+    "verify:live": "node scripts/live-smoke.mjs",
     "test": "vitest run src && playwright test"
   },
   "devDependencies": {
