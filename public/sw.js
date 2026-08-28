@@ -1,11 +1,11 @@
-const CACHE = 'home-service-passbook-v4';
+const CACHE = 'home-service-passbook-v5';
 const SHELL = ['/', '/app', '/demo', '/privacy', '/terms', '/manifest.webmanifest', '/favicon.svg', '/assets/hero-640.webp'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE).then(async (cache) => {
     await Promise.all(SHELL.map(async (path) => {
       const separator = path.includes('?') ? '&' : '?';
-      const response = await fetch(`${path}${separator}precache=4`, { cache: 'reload' });
+      const response = await fetch(`${path}${separator}precache=5`, { cache: 'reload' });
       if (response.ok) await cache.put(path, response);
     }));
     const page = await cache.match('/');
@@ -13,7 +13,7 @@ self.addEventListener('install', (event) => {
       const html = await page.text();
       const builtAssets = [...html.matchAll(/["'](\/assets\/[^"']+)["']/g)].map((match) => match[1]);
       await Promise.all([...new Set(builtAssets)].map(async (path) => {
-        const response = await fetch(`${path}?precache=4`, { cache: 'reload' });
+        const response = await fetch(`${path}?precache=5`, { cache: 'reload' });
         if (response.ok) await cache.put(path, response);
       }));
     }

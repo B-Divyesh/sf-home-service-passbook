@@ -1,4 +1,5 @@
 import './style.css';
+import { calendarPayload } from './calendar';
 import { dueState, formatDate, nextDue, scheduleLabel, todayISO } from './date';
 import { clear, enterDemo, exportPayload, isDemo, leaveDemo, load, replaceWithImport, save, takeRecoveryNotice, validateImport } from './store';
 import type { AppState, Asset, Completion, Task } from './types';
@@ -18,15 +19,15 @@ const VERIFY_URL = `https://api.sociobot.in/api/v1/products/${PRODUCT_SLUG}/veri
 
 interface CachedVerdict { valid: boolean; checkedAt: number; token: string }
 
-const titles: Record<string, string> = {
-  '/': 'Home Service Passbook — Track home maintenance',
-  '/app': 'Your passbook — Home Service Passbook',
-  '/demo': 'Demo — Home Service Passbook',
-  '/history': 'Service history — Home Service Passbook',
-  '/backup': 'Backup — Home Service Passbook',
-  '/privacy': 'Privacy — Home Service Passbook',
-  '/terms': 'Terms — Home Service Passbook',
-  '/404': 'Page not found — Home Service Passbook'
+const routeMetadata: Record<string, { title: string; description: string }> = {
+  '/': { title: 'Home Service Passbook — Track home maintenance', description: 'Track recurring home care and keep service proof in one private, offline passbook.' },
+  '/app': { title: 'Your passbook — Home Service Passbook', description: 'View due home service jobs and record completed work in your private passbook.' },
+  '/demo': { title: 'Demo — Home Service Passbook', description: 'Try a filled Home Service Passbook with isolated sample records.' },
+  '/history': { title: 'Service history — Home Service Passbook', description: 'Review and print the service entries saved in this browser.' },
+  '/backup': { title: 'Backup — Home Service Passbook', description: 'Export or import a complete Home Service Passbook backup.' },
+  '/privacy': { title: 'Privacy — Home Service Passbook', description: 'Read how Home Service Passbook stores records and handles license checks.' },
+  '/terms': { title: 'Terms — Home Service Passbook', description: 'Read the terms for using Home Service Passbook and House Key.' },
+  '/404': { title: 'Page not found — Home Service Passbook', description: 'This page is not in the Home Service Passbook.' }
 };
 
 const uid = (prefix: string) => `${prefix}-${crypto.randomUUID()}`;
@@ -52,7 +53,7 @@ function shell(content: string): string {
       <footer class="site-footer">
         <p><strong>Home Service Passbook</strong><br>Household-owned maintenance records.</p>
         <div><a href="/privacy" data-link>Privacy</a><a href="/terms" data-link>Terms</a></div>
-        <p>Built by Param Factory · v1.0.2<br>Original generated artwork.</p>
+        <p>Built by Param Factory · v1.0.3<br>Original generated artwork.</p>
       </footer>
       <div class="route-status sr-only" aria-live="polite"></div>
       <div class="toast" role="status" aria-live="polite" hidden></div>
@@ -74,10 +75,10 @@ function landing(): string {
         <h1 tabindex="-1">Remember every home service job</h1>
         <p class="lede">For households tracking recurring care, service dates, notes, and receipts without another appliance account.</p>
         <div class="hero-actions">
-          <a class="button primary" href="/demo" data-link>Try it with sample data</a>
+          <a class="button primary" href="/?demo=1" data-link>Try it with sample data</a>
           <a class="button secondary" href="/app" data-link>Start my passbook</a>
         </div>
-        <p class="action-note">The demo opens a filled service log. Starting for real opens an empty passbook.</p>
+        <p class="action-note">The demo opens a filled service history. Starting for real opens your passbook.</p>
         <ul class="plain-facts" aria-label="Product facts">
           <li><span aria-hidden="true">●</span> Works offline after the first visit</li>
           <li><span aria-hidden="true">●</span> Records stay in this browser</li>
@@ -97,7 +98,7 @@ function landing(): string {
       </div>
     </section>
     <section class="preview-section" aria-labelledby="preview-title">
-      <div class="section-heading"><p class="eyebrow">The product itself</p><h2 id="preview-title">See what is due and why</h2><p>Each job keeps its own schedule rule and proof.</p></div>
+      <div class="section-heading"><p class="eyebrow">Sample service schedule</p><h2 id="preview-title">See what is due and why</h2><p>Each job keeps its own schedule rule and proof.</p></div>
       <div class="ledger-preview">
         <div class="preview-header"><span>UP NEXT</span><span>28 AUG 2026</span></div>
         <article><div><span class="status overdue">Overdue</span><h3>Replace air filter</h3><p>Furnace · Utility room</p></div><div class="readout"><small>DUE</small><b>14 AUG</b><small>3 months after completion</small></div></article>
@@ -105,7 +106,7 @@ function landing(): string {
       </div>
     </section>
     <section class="how" aria-labelledby="how-title">
-      <div class="section-heading"><p class="eyebrow">How it works</p><h2 id="how-title">Keep a service trail in three steps</h2></div>
+      <div class="section-heading"><p class="eyebrow">How it works</p><h2 id="how-title">Record service history in three steps</h2></div>
       <ol>
         <li><span>01</span><div><h3>Add the thing you maintain</h3><p>Name its room, appliance, or outside area.</p></div></li>
         <li><span>02</span><div><h3>Choose the repeat rule</h3><p>Use fixed calendar dates or count from completion.</p></div></li>
@@ -113,11 +114,11 @@ function landing(): string {
       </ol>
     </section>
     <section class="limits" aria-labelledby="limits-title">
-      <div><p class="eyebrow">Clear boundaries</p><h2 id="limits-title">A record, not a repair guide</h2></div>
+      <div><p class="eyebrow">What this passbook does not do</p><h2 id="limits-title">A record, not a repair guide</h2></div>
       <p>This passbook does not control appliances. It does not diagnose faults, certify safety, or file warranty claims. Follow manufacturer guidance and use a qualified professional where needed.</p>
     </section>
     <section class="paid" aria-labelledby="paid-title">
-      <div><p class="eyebrow">House Key</p><h2 id="paid-title">Keep more than five assets</h2><p>One $19 purchase adds unlimited assets and local photo attachments. Backup, print, and accessibility stay free.</p></div>
+      <div><p class="eyebrow">Price</p><h2 id="paid-title">Keep more than five assets</h2><p>One $19 House Key purchase adds unlimited assets and local photo attachments. Backup, print, and accessibility stay free.</p></div>
       <div><a class="button primary" href="${CHECKOUT_URL}">Buy House Key — $19</a><a class="touch-link" href="/app?panel=license" data-link>Restore a license</a></div>
     </section>`);
 }
@@ -151,7 +152,7 @@ function panelContent(dueTasks: Task[]): string {
   if (activePanel === 'backup') return backupPanel();
   if (activePanel === 'license') return licensePanel();
   if (!dueTasks.length) return emptyBlock('No scheduled jobs yet', 'Add an asset, then add its first recurring job.', '<button class="button primary" data-open="asset-dialog">Add an asset</button>');
-  return `<div class="panel-toolbar"><div><p class="panel-kicker">Ordered by due date</p><p>${dueTasks.length} recurring ${dueTasks.length === 1 ? 'job' : 'jobs'}</p></div><button class="button primary" data-open="completion-dialog" ${dueTasks.length ? '' : 'disabled'}>Record completed work</button></div>
+  return `<div class="panel-toolbar"><div><p class="panel-kicker">Ordered by due date</p><p>${dueTasks.length} recurring ${dueTasks.length === 1 ? 'job' : 'jobs'}</p></div><div class="toolbar-actions"><button class="button secondary" data-action="calendar">Export calendar (.ics)</button><button class="button primary" data-open="completion-dialog" ${dueTasks.length ? '' : 'disabled'}>Record completed work</button></div></div>
     <div class="task-list">${dueTasks.map(taskRow).join('')}</div>`;
 }
 
@@ -249,9 +250,11 @@ function notFound(): string {
 
 async function render(focus = false): Promise<void> {
   const path = window.location.pathname.replace(/\/$/, '') || '/';
+  const demoQuery = path === '/' && new URLSearchParams(location.search).get('demo') === '1';
+  const route = demoQuery ? '/demo' : path;
   const canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
-  if (canonical) canonical.href = `https://home-service-passbook.sociobot.in${path}`;
-  if (path === '/demo') {
+  if (canonical) canonical.href = `https://home-service-passbook.sociobot.in${route}`;
+  if (route === '/demo') {
     state = await enterDemo();
     activePanel = (new URLSearchParams(location.search).get('panel') as typeof activePanel) || 'due';
   } else if (path === '/app' || path === '/history' || path === '/backup') {
@@ -259,8 +262,12 @@ async function render(focus = false): Promise<void> {
     state = await load();
     activePanel = path === '/history' ? 'history' : path === '/backup' ? 'backup' : (new URLSearchParams(location.search).get('panel') as typeof activePanel) || activePanel;
   }
-  document.title = titles[path] ?? titles['/404'];
-  root.innerHTML = path === '/' ? landing() : path === '/privacy' ? legalPage('privacy') : path === '/terms' ? legalPage('terms') : path === '/demo' || path === '/app' || path === '/history' || path === '/backup' ? appPage() : notFound();
+  const metadata = routeMetadata[route] ?? routeMetadata['/404'];
+  document.title = metadata.title;
+  document.querySelector<HTMLMetaElement>('meta[name="description"]')?.setAttribute('content', metadata.description);
+  for (const selector of ['meta[property="og:title"]', 'meta[name="twitter:title"]']) document.querySelector<HTMLMetaElement>(selector)?.setAttribute('content', metadata.title);
+  for (const selector of ['meta[property="og:description"]', 'meta[name="twitter:description"]']) document.querySelector<HTMLMetaElement>(selector)?.setAttribute('content', metadata.description);
+  root.innerHTML = route === '/' ? landing() : route === '/privacy' ? legalPage('privacy') : route === '/terms' ? legalPage('terms') : ['/demo', '/app', '/history', '/backup'].includes(route) ? appPage() : notFound();
   bindEvents();
   if (pendingToast) {
     const message = pendingToast;
@@ -316,6 +323,7 @@ function bindEvents(): void {
   root.querySelector('[data-action="leave-demo"]')?.addEventListener('click', async () => { await clear(); leaveDemo(); activePanel = 'due'; history.pushState({}, '', '/app'); await render(true); });
   root.querySelector('[data-action="print"]')?.addEventListener('click', () => window.print());
   root.querySelector('[data-action="export"]')?.addEventListener('click', exportBackup);
+  root.querySelector('[data-action="calendar"]')?.addEventListener('click', exportCalendar);
   root.querySelector<HTMLInputElement>('#import-file')?.addEventListener('change', importBackup);
   root.querySelector<HTMLFormElement>('#asset-form')?.addEventListener('submit', addAsset);
   root.querySelector<HTMLFormElement>('#task-form')?.addEventListener('submit', addTask);
@@ -566,6 +574,17 @@ function exportBackup(): void {
   link.href = href; link.download = `home-service-passbook-${todayISO()}.json`; link.click();
   URL.revokeObjectURL(href);
   showToast('Passbook backup downloaded.');
+}
+
+function exportCalendar(): void {
+  const blob = new Blob([calendarPayload(state)], { type: 'text/calendar;charset=utf-8' });
+  const href = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = href;
+  link.download = `home-service-jobs-${todayISO()}.ics`;
+  link.click();
+  URL.revokeObjectURL(href);
+  showToast(`${state.tasks.length} ${state.tasks.length === 1 ? 'job' : 'jobs'} exported to your calendar file.`);
 }
 
 async function importBackup(event: Event): Promise<void> {

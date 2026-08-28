@@ -22,7 +22,11 @@ test('@claim:demo-sandbox demo is filled and isolated from real data', async ({ 
   await page.getByLabel('Asset name').fill('Boiler');
   await page.getByRole('button', { name: 'Save asset' }).click();
   await page.getByRole('button', { name: 'Close dialog' }).click();
-  await page.goto('/demo');
+  await page.goto('/');
+  const sampleAction = page.getByRole('link', { name: 'Try it with sample data' });
+  await expect(sampleAction).toHaveAttribute('href', '/?demo=1');
+  await sampleAction.click();
+  await expect(page).toHaveURL('/?demo=1');
   await expect(page.getByText('Demo — sample data, nothing is saved to your passbook.')).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Replace air filter' })).toBeVisible();
   await page.getByRole('button', { name: 'Reset demo' }).click();
@@ -47,13 +51,13 @@ test('@claim:recurrence-rules fixed and completion-relative schedules differ wit
   await expect(fixed).toContainText('Overdue');
   await expect(fixed).toContainText('Aug 1, 2026');
 
-  await page.goto('/demo');
+  await page.goto('/?demo=1');
   const completionRelative = page.getByRole('article').filter({ hasText: 'Replace air filter' });
   await expect(completionRelative).toContainText('Repeat after completion');
 });
 
 test('@claim:json-backup export contains every record collection', async ({ page }) => {
-  await page.goto('/demo');
+  await page.goto('/?demo=1');
   await page.evaluate(() => {
     localStorage.setItem('sb_license:home-service-passbook', 'fixture-license');
     localStorage.setItem('sb_license_verdict:home-service-passbook', JSON.stringify({ valid: true, checkedAt: Date.now(), token: 'fixture-license' }));
@@ -94,7 +98,7 @@ test('@claim:local-only demo flow makes no cross-origin requests', async ({ page
     const url = new URL(request.url());
     if (url.origin !== 'http://127.0.0.1:4173') external.push(request.url());
   });
-  await page.goto('/demo');
+  await page.goto('/?demo=1');
   await page.getByRole('button', { name: 'Assets' }).click();
   await page.getByRole('button', { name: 'History' }).click();
   await page.getByRole('button', { name: 'Backup', exact: true }).click();
@@ -105,7 +109,7 @@ test('@claim:local-only demo flow makes no cross-origin requests', async ({ page
 });
 
 test('@claim:offline-reload app reloads offline after first visit', async ({ page, context }) => {
-  await page.goto('/demo');
+  await page.goto('/?demo=1');
   await page.evaluate(async () => {
     await navigator.serviceWorker.ready;
     if (!navigator.serviceWorker.controller) {
@@ -172,7 +176,7 @@ test('@claim:house-key-limit free limit and licensed features are enforced', asy
   await page.getByRole('button', { name: 'Add an asset' }).click();
   await expect(page.getByRole('heading', { name: 'Add an asset' })).toBeVisible();
   await page.getByRole('button', { name: 'Close dialog' }).click();
-  await page.goto('/demo');
+  await page.goto('/?demo=1');
   await page.getByRole('button', { name: 'Record completed work' }).click();
   const proof = page.getByLabel('Photo or receipt file optional, 3 MB maximum');
   await expect(proof).toBeVisible();
@@ -204,7 +208,7 @@ test('light and dark routes have no serious accessibility violations on desktop 
     await page.setViewportSize({ width, height: width === 390 ? 844 : 900 });
     for (const colorScheme of ['light', 'dark'] as const) {
       await page.emulateMedia({ colorScheme });
-      for (const path of ['/', '/demo', '/privacy', '/terms', '/404']) {
+      for (const path of ['/', '/demo', '/privacy', '/terms', '/404', '/404.html']) {
         await page.goto(path);
         await expect(page.locator('h1')).toHaveCount(1);
         const results = await new AxeBuilder({ page }).analyze();
@@ -234,7 +238,7 @@ test('mobile first screen and keyboard path work', async ({ page }) => {
     expect(box?.width, `${path} email width`).toBeGreaterThanOrEqual(44);
     expect(box?.height, `${path} email height`).toBeGreaterThanOrEqual(44);
   }
-  await page.goto('/demo');
+  await page.goto('/?demo=1');
   for (const name of ['Reset demo', 'Start for real']) {
     const box = await page.getByRole('button', { name }).boundingBox();
     expect(box?.height).toBeGreaterThanOrEqual(44);
@@ -406,7 +410,7 @@ test('@claim:refund-revocation an inactive license verdict locks House Key featu
 });
 
 test('@claim:record-corrections future work is rejected and existing records can be corrected at the five-asset limit', async ({ page }) => {
-  await page.goto('/demo');
+  await page.goto('/?demo=1');
   await page.getByRole('button', { name: 'Record completed work' }).click();
   await page.getByLabel('Completed on').fill('2099-12-31');
   await page.getByRole('button', { name: 'Save service entry' }).click();
@@ -490,9 +494,67 @@ test('a failed IndexedDB write keeps the asset form open and preserves the enter
 });
 
 test('@claim:print-history service history opens the browser print path', async ({ page }) => {
-  await page.goto('/demo');
+  await page.goto('/?demo=1');
   await page.getByRole('button', { name: 'History' }).click();
   await page.evaluate(() => { (window as Window & { printCalled?: boolean }).print = () => { (window as Window & { printCalled?: boolean }).printCalled = true; }; });
   await page.getByRole('button', { name: 'Print history' }).click();
   await expect.poll(() => page.evaluate(() => (window as Window & { printCalled?: boolean }).printCalled)).toBe(true);
+});
+
+test('@claim:calendar-export calendar file contains every current job and due date offline', async ({ page, context }) => {
+  await page.goto('/?demo=1');
+  await context.setOffline(true);
+  const downloadPromise = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Export calendar (.ics)' }).click();
+  const download = await downloadPromise;
+  expect(download.suggestedFilename()).toMatch(/^home-service-jobs-\d{4}-\d{2}-\d{2}\.ics$/);
+  const stream = await download.createReadStream();
+  const chunks: Buffer[] = [];
+  for await (const chunk of stream) chunks.push(Buffer.from(chunk));
+  const calendar = Buffer.concat(chunks).toString();
+  const events = calendar.split('BEGIN:VEVENT').slice(1).map((event) => event.split('END:VEVENT')[0]);
+  expect(events).toHaveLength(3);
+  expect(events).toEqual(expect.arrayContaining([
+    expect.stringContaining('DTSTART;VALUE=DATE:20260814\r\nSUMMARY:Replace air filter\r\nDESCRIPTION:Furnace · Utility room · Repeat after completion 3 months'),
+    expect.stringContaining('DTSTART;VALUE=DATE:20260915\r\nSUMMARY:Vacuum condenser coils\r\nDESCRIPTION:Refrigerator · Kitchen · Repeat every 6 months'),
+    expect.stringContaining('DTSTART;VALUE=DATE:20261001\r\nSUMMARY:Clear leaves from gutters\r\nDESCRIPTION:Rain gutters · Outside · Repeat every 6 months')
+  ]));
+});
+
+test('@claim:scope-boundaries published scope matches the available local record actions', async ({ page }) => {
+  const requests: string[] = [];
+  page.on('request', (request) => requests.push(request.url()));
+  await page.goto('/');
+  await expect(page.getByText('This passbook does not control appliances.')).toBeVisible();
+  await expect(page.getByText('It does not diagnose faults, certify safety, or file warranty claims.')).toBeVisible();
+  await page.goto('/?demo=1');
+  const actionNames = await page.getByRole('button').allTextContents();
+  expect(actionNames.join(' ')).not.toMatch(/control|diagnos|certif|repair advice|warranty/i);
+  expect(requests.join(' ')).not.toMatch(/control|diagnos|certif|warranty/i);
+});
+
+test('every route has matching metadata and History API navigation restores focus', async ({ page }) => {
+  const routes = [
+    ['/', 'Home Service Passbook — Track home maintenance', 'Track recurring home care and keep service proof in one private, offline passbook.'],
+    ['/demo', 'Demo — Home Service Passbook', 'Try a filled Home Service Passbook with isolated sample records.'],
+    ['/app', 'Your passbook — Home Service Passbook', 'View due home service jobs and record completed work in your private passbook.'],
+    ['/history', 'Service history — Home Service Passbook', 'Review and print the service entries saved in this browser.'],
+    ['/backup', 'Backup — Home Service Passbook', 'Export or import a complete Home Service Passbook backup.'],
+    ['/privacy', 'Privacy — Home Service Passbook', 'Read how Home Service Passbook stores records and handles license checks.'],
+    ['/terms', 'Terms — Home Service Passbook', 'Read the terms for using Home Service Passbook and House Key.']
+  ] as const;
+  for (const [path, title, description] of routes) {
+    await page.goto(path);
+    await expect(page).toHaveTitle(title);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', `https://home-service-passbook.sociobot.in${path}`);
+    for (const selector of ['meta[name="description"]', 'meta[property="og:description"]', 'meta[name="twitter:description"]']) {
+      await expect(page.locator(selector)).toHaveAttribute('content', description);
+    }
+    for (const selector of ['meta[property="og:title"]', 'meta[name="twitter:title"]']) await expect(page.locator(selector)).toHaveAttribute('content', title);
+  }
+  await page.goto('/');
+  await page.getByRole('link', { name: 'Privacy', exact: true }).first().click();
+  await expect(page.getByRole('heading', { level: 1 })).toBeFocused();
+  await page.goBack();
+  await expect(page.getByRole('heading', { level: 1 })).toBeFocused();
 });

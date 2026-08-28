@@ -2,13 +2,13 @@
   {
     "id": "demo-sandbox",
     "claim": "The demo uses sample data and never writes to the real passbook.",
-    "where": "demo banner and README",
+    "where": "first-screen action, demo banner, demo guide, and README",
     "test": "npm test -- --grep @claim:demo-sandbox",
     "sandbox": "seed a real Boiler, enter and reset /demo, leave demo, then prove Boiler remains and demo Furnace does not cross namespaces"
   },
   {
     "id": "recurrence-rules",
-    "claim": "Supports fixed calendar and completion-relative recurrence.",
+    "claim": "Schedules jobs on fixed dates or from the last completion date.",
     "where": "landing preview, job form, and README",
     "test": "npm test -- --grep @claim:recurrence-rules",
     "sandbox": "demo records show both recurrence labels; unit tests assert their date behavior"
@@ -54,6 +54,20 @@
     "where": "history toolbar and README",
     "test": "npm test -- --grep @claim:print-history",
     "sandbox": "demo history; intercept and assert the browser print action"
+  },
+  {
+    "id": "calendar-export",
+    "claim": "Exports every current job and due date to a calendar file.",
+    "where": "Due next toolbar and README",
+    "test": "npm test -- --grep @claim:calendar-export",
+    "sandbox": "isolated demo data; parse the downloaded ICS and match one event, due date, asset, area, and recurrence rule for every current job"
+  },
+  {
+    "id": "scope-boundaries",
+    "claim": "The passbook records work but does not control appliances, diagnose faults, certify safety, give repair advice, or file warranty claims.",
+    "where": "landing boundaries, terms, and README",
+    "test": "npm test -- --grep @claim:scope-boundaries",
+    "sandbox": "inspect the published boundaries and all available demo actions; assert no control, diagnosis, certification, advice, or warranty action and no matching request destination"
   },
   {
     "id": "record-corrections",

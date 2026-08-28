@@ -3,7 +3,7 @@
   "short_name": "Passbook",
   "description": "Track recurring home care and keep service proof.",
   "id": "/",
-  "start_url": "/app?v=3",
+  "start_url": "/app?v=5",
   "scope": "/",
   "display": "standalone",
   "background_color": "#f3ebd8",
