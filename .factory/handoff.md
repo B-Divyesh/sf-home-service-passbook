@@ -21,7 +21,6 @@ npm ci
 npm audit --audit-level=high
 npm run lint
 npm test
-npm run lint
 npm run build
 npm run verify:live -- https://home-service-passbook.sociobot.in .factory/qa-evidence-3/live
 ```
