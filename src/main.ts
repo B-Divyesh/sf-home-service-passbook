@@ -314,7 +314,26 @@ function bindEvents(): void {
   root.querySelector<HTMLFormElement>('#task-form')?.addEventListener('submit', addTask);
   root.querySelector<HTMLFormElement>('#completion-form')?.addEventListener('submit', completeTask);
   root.querySelector<HTMLFormElement>('#license-form')?.addEventListener('submit', restoreLicense);
-  root.querySelectorAll<HTMLDialogElement>('dialog').forEach((dialog) => dialog.addEventListener('click', (event) => { if (event.target === dialog) dialog.close(); }));
+  root.querySelectorAll<HTMLDialogElement>('dialog').forEach((dialog) => {
+    dialog.addEventListener('click', (event) => { if (event.target === dialog) dialog.close(); });
+    dialog.addEventListener('keydown', (event) => keepFocusInDialog(event, dialog));
+  });
+}
+
+function keepFocusInDialog(event: KeyboardEvent, dialog: HTMLDialogElement): void {
+  if (event.key !== 'Tab') return;
+  const focusable = [...dialog.querySelectorAll<HTMLElement>('button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])')]
+    .filter((element) => !element.hidden && getComputedStyle(element).display !== 'none' && getComputedStyle(element).visibility !== 'hidden');
+  if (!focusable.length) return;
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+  if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault();
+    last.focus();
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault();
+    first.focus();
+  }
 }
 
 function resetDialog(id: string): void {
@@ -441,6 +460,7 @@ function openDialog(id: string): void {
   }
   const dialog = root.querySelector<HTMLDialogElement>(`#${id}`);
   dialog?.showModal();
+  dialog?.querySelector<HTMLElement>('[data-close]')?.focus();
 }
 
 async function addAsset(event: SubmitEvent): Promise<void> {

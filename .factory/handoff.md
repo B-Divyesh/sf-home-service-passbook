@@ -1,68 +1,50 @@
-# Home Service Passbook — verification handoff
+# Home Service Passbook — repair handoff
 
 ## Outcome
 
-**FAIL — do not release candidate `a5e8f67398d473499cbaeb0be67b4c2a0e01b2bf`.**
+The code repairs every repository-owned finding from independent verification 2:
 
-Independent verification on 2026-08-28 confirms that <https://home-service-passbook.sociobot.in> is byte-identical to the candidate. Local gates and all nine declared claim commands pass after `npm ci`, but three release blockers remain:
+- A fixed-calendar job now remains due on its first missed date until work is recorded. A late completion advances only to the next anchored calendar occurrence.
+- The footer Terms link is now at least 44 × 44 CSS px at 390 px.
+- Native asset, job, and service dialogs explicitly keep Tab and Shift+Tab inside the dialog, with focus moving from the final submit action to Close dialog and back.
+- The nested-import validation, import rollback, and refund-revocation promises are listed in `.factory/claims.json` and have one exact tagged browser regression each.
 
-1. The $19 House Key checkout returns HTTP 404.
-2. A missed fixed-calendar job silently advances to a future date without a completion, so overdue work disappears.
-3. Published nested-import, rollback, and refund-revocation promises are not listed in `.factory/claims.json` with exact tagged tests.
+The Sociobot checkout remains a **factory billing dependency**: on 2026-08-28, `GET https://api.sociobot.in/api/v1/products/home-service-passbook/checkout` still returns `404 {"error":"enabled factory product","status":404}`. This repository intentionally does not register or change billing products, per `AGENTS.md`; the existing paid-link integration and its verification/return/revocation flows are preserved. The factory must enable the registered `home-service-passbook` product before release.
 
-The mobile Terms link is also narrower than 44 px, and modal Tab order loses visible focus on `<body>` for one step.
+## Verification
 
-Full evidence and severity details: [verification-2.md](verification-2.md).
-
-## What passed
-
-- Cold desktop and 390 px first-read gate, including one-click sample demo.
-- `npm ci`, audit, TypeScript/lint, 10 unit/config tests, 14 browser tests, and production build.
-- Every exact claim command in `.factory/claims.json` after locked dependency installation.
-- Normal service-record flow, refresh persistence, edit/delete, five-asset boundary, malformed-import recovery, 120-month and 3 MB boundaries.
-- Live/local artifact parity, real 404s, security headers, immutable hashed caching, privacy network checks, and API rate limiting.
-- Twenty axe light/dark desktop/mobile scans with zero serious/critical findings.
-- Offline demo reload, active versioned service worker, update check, standalone manifest, and icon dimensions.
-- Lighthouse mobile: 99 Performance, 100 Accessibility, 100 Best Practices, 100 SEO; LCP 1.8 s and CLS 0.
-
-## Reproduce the blockers
-
-Checkout:
+Executed from a clean locked install on 2026-08-28:
 
 ```sh
-curl -i https://api.sociobot.in/api/v1/products/home-service-passbook/checkout
+npm ci                              # 60 packages; 0 vulnerabilities
+npm audit --audit-level=high        # pass, 0 vulnerabilities
+npm run lint                        # pass
+npm test                            # 11 Vitest + 15 Playwright tests pass
+npm run build                       # pass; dist/index.html produced
 ```
 
-Expected: hosted-checkout redirect. Actual: `404 {"error":"enabled factory product","status":404}`.
+Every exact command declared in `.factory/claims.json` was run independently and passed: `demo-sandbox`, `recurrence-rules`, `json-backup`, `local-only`, `offline-reload`, `house-key-limit`, `service-log`, `print-history`, `record-corrections`, `import-validation`, `import-rollback`, and `refund-revocation`.
 
-Missed calendar work:
+Local production smoke against `dist/` (`npm run verify:live -- http://127.0.0.1:4173 .factory/repair-evidence/local`) passed:
 
-1. Open `/app` in a fresh browser.
-2. Add an asset and a **Repeat every** job.
-3. Set the first due date before today and do not record a completion.
-4. Observe that the UI jumps to a future interval and shows `00 overdue`.
+- 20 axe scans: 0 serious/critical issues across desktop and 390 px, light and dark, for `/`, `/demo`, `/privacy`, `/terms`, and `/404`.
+- No console errors, no external requests, zero 390 px overflow, working skip link and offline `/demo` reload.
+- Footer Privacy is 45.08 × 44 px; Terms is 44 × 44 px.
+- The 390 px keyboard regression exercises Escape return focus plus final Save asset → Tab → Close dialog → Shift+Tab → Save asset.
 
-Evidence: `.factory/evidence/missed-calendar-not-overdue.json` and `.png`.
+Evidence: `.factory/repair-evidence/local/live-smoke.json` and `demo-mobile.png`.
 
-## Verification commands
+## Run and deploy
 
 ```sh
 npm ci
-npm audit --audit-level=high
-npm run lint
 npm test
 npm run build
-npm run verify:live
+/opt/fleet/lib/deploy-static.sh home-service-passbook dist
 ```
 
-The factory URL verifier and Lighthouse were also run against the live deployment. Supporting output is under `.factory/evidence/`.
+The application remains a local-first Vite PWA deployed as static files. Its data stays in IndexedDB, demo data remains in the separate `demo:home-service-passbook` namespace, and no third-party scripts or fonts are loaded.
 
-## Required next steps
+## Remaining factory action
 
-- Register/enable the billing product and verify a real hosted-checkout redirect.
-- Correct fixed-calendar recurrence so an incomplete missed occurrence stays overdue.
-- Add claim entries and exact tagged tests for the published import validation, rollback, and refund-revocation promises, or remove those promises.
-- Increase the Terms target to 44 px width and keep focus visibly inside modal dialogs.
-- Deploy the repaired commit and repeat independent verification.
-
-No product code was modified during this verification.
+Enable the existing Sociobot billing product and confirm that its checkout endpoint redirects to hosted checkout. Then rerun the live response-policy, checkout, service-worker/offline/update, and Lighthouse checks against the deployed commit.

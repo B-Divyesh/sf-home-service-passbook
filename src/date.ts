@@ -15,15 +15,21 @@ export function addMonths(date: string, months: number): string {
 
 export function nextDue(task: Task, completions: Completion[]): string {
   if (task.mode === 'calendar') {
-    let due = task.startDate;
-    const today = todayISO();
-    while (due < today) {
-      const next = addMonths(due, task.intervalMonths);
-      if (next === due) break;
-      due = next;
+    // Fixed schedules do not become complete merely because their date passed.
+    // A recorded completion clears the most recent scheduled occurrence on or
+    // before that completion, then the next date stays anchored to the series.
+    const latestCompletion = completions
+      .filter((item) => item.taskId === task.id)
+      .sort((a, b) => b.completedOn.localeCompare(a.completedOn))[0];
+    if (!latestCompletion || latestCompletion.completedOn < task.startDate) return task.startDate;
+
+    let completedOccurrence = task.startDate;
+    while (true) {
+      const next = addMonths(completedOccurrence, task.intervalMonths);
+      if (next === completedOccurrence || next > latestCompletion.completedOn) break;
+      completedOccurrence = next;
     }
-    const completedOnDue = completions.some((item) => item.taskId === task.id && item.completedOn === due);
-    return completedOnDue ? addMonths(due, task.intervalMonths) : due;
+    return addMonths(completedOccurrence, task.intervalMonths);
   }
 
   const latest = completions

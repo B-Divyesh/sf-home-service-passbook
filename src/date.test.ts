@@ -12,6 +12,13 @@ describe('recurrence rules', () => {
     vi.useRealTimers();
   });
 
+  it('keeps a missed fixed-calendar occurrence overdue until work is recorded', () => {
+    vi.setSystemTime(new Date('2026-08-28T00:00:00Z'));
+    const task = { ...base, intervalMonths: 6, startDate: '2026-08-01' };
+    expect(nextDue(task, [])).toBe('2026-08-01');
+    vi.useRealTimers();
+  });
+
   it('starts completion-relative recurrence on the completion date', () => {
     vi.setSystemTime(new Date('2026-08-01T00:00:00Z'));
     const task = { ...base, mode: 'completion' as const };

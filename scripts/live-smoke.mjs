@@ -20,7 +20,10 @@ try {
   await page.screenshot({ path: `${output}/demo-mobile.png`, fullPage: true });
   results.overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   for (const name of ['Reset demo', 'Start for real']) results.touchTargets[name] = (await page.getByRole('button', { name }).boundingBox())?.height;
-  for (const name of ['Privacy', 'Terms']) results.touchTargets[`footer-${name}`] = (await page.getByRole('contentinfo').getByRole('link', { name }).boundingBox())?.height;
+  for (const name of ['Privacy', 'Terms']) {
+    const box = await page.getByRole('contentinfo').getByRole('link', { name }).boundingBox();
+    results.touchTargets[`footer-${name}`] = { width: box?.width, height: box?.height };
+  }
   await page.getByText('Skip to main content').focus();
   await page.keyboard.press('Enter');
   results.keyboard = await page.locator('#main').evaluate((element) => element === document.activeElement);
@@ -47,7 +50,7 @@ try {
   }
   await writeFile(`${output}/live-smoke.json`, JSON.stringify(results, null, 2));
   console.log(JSON.stringify(results, null, 2));
-  if (results.consoleErrors.length || results.externalRequests.length || !results.offline || !results.keyboard || results.overflow !== 0 || Object.values(results.touchTargets).some((height) => Number(height) < 44) || results.axe.some((item) => item.seriousOrCritical)) process.exitCode = 1;
+  if (results.consoleErrors.length || results.externalRequests.length || !results.offline || !results.keyboard || results.overflow !== 0 || Object.values(results.touchTargets).some((target) => typeof target === 'object' ? Number(target.width) < 44 || Number(target.height) < 44 : Number(target) < 44) || results.axe.some((item) => item.seriousOrCritical)) process.exitCode = 1;
 } finally {
   await browser.close();
 }

@@ -18,12 +18,24 @@ test('@claim:demo-sandbox demo is filled and isolated from real data', async ({ 
   await expect(page.getByRole('heading', { name: 'Furnace' })).toHaveCount(0);
 });
 
-test('@claim:recurrence-rules fixed and completion-relative schedules differ', async ({ page }) => {
+test('@claim:recurrence-rules fixed and completion-relative schedules differ without hiding missed fixed work', async ({ page }) => {
+  await page.goto('/app');
+  await page.getByRole('button', { name: 'Add an asset' }).click();
+  await page.getByLabel('Area').fill('Utility room');
+  await page.getByLabel('Asset name').fill('Boiler');
+  await page.getByRole('button', { name: 'Save asset' }).click();
+  await page.getByLabel('Job name').fill('Inspect pressure valve');
+  await page.getByLabel('Months between jobs').fill('6');
+  await page.getByLabel('First due date').fill('2026-08-01');
+  await page.getByRole('button', { name: 'Save recurring job' }).click();
+  const fixed = page.getByRole('article').filter({ hasText: 'Inspect pressure valve' });
+  await expect(fixed).toContainText('Repeat every 6 months');
+  await expect(fixed).toContainText('Overdue');
+  await expect(fixed).toContainText('Aug 1, 2026');
+
   await page.goto('/demo');
-  const filter = page.getByRole('article').filter({ hasText: 'Replace air filter' });
-  const coils = page.getByRole('article').filter({ hasText: 'Vacuum condenser coils' });
-  await expect(filter).toContainText('Repeat after completion');
-  await expect(coils).toContainText('Repeat every');
+  const completionRelative = page.getByRole('article').filter({ hasText: 'Replace air filter' });
+  await expect(completionRelative).toContainText('Repeat after completion');
 });
 
 test('@claim:json-backup export contains every record collection', async ({ page }) => {
@@ -198,6 +210,8 @@ test('mobile first screen and keyboard path work', async ({ page }) => {
     const box = await target.boundingBox();
     expect(box?.height).toBeGreaterThanOrEqual(44);
   }
+  const termsBox = await page.getByRole('contentinfo').getByRole('link', { name: 'Terms' }).boundingBox();
+  expect(termsBox?.width).toBeGreaterThanOrEqual(44);
   await page.goto('/demo');
   for (const name of ['Reset demo', 'Start for real']) {
     const box = await page.getByRole('button', { name }).boundingBox();
@@ -213,6 +227,16 @@ test('mobile first screen and keyboard path work', async ({ page }) => {
   await expect(page.getByRole('dialog')).toBeVisible();
   await page.keyboard.press('Escape');
   await expect(add).toBeFocused();
+
+  await add.focus();
+  await page.keyboard.press('Enter');
+  const saveAsset = page.getByRole('button', { name: 'Save asset' });
+  await saveAsset.focus();
+  await page.keyboard.press('Tab');
+  await expect(page.getByRole('button', { name: 'Close dialog' })).toBeFocused();
+  await page.keyboard.press('Shift+Tab');
+  await expect(saveAsset).toBeFocused();
+  await page.keyboard.press('Escape');
 
   await page.goto('/');
   await page.evaluate(() => { document.documentElement.style.fontSize = '200%'; });
@@ -284,7 +308,7 @@ test('@claim:service-log a household can add an asset, schedule work, complete i
   await expect(entry).toContainText('Plumber invoice 208');
 });
 
-test('malformed imports are rejected without replacing valid records', async ({ page }) => {
+test('@claim:import-validation malformed nested imports are rejected before confirmation without replacing valid records', async ({ page }) => {
   await page.goto('/app');
   await page.getByRole('button', { name: 'Add an asset' }).click();
   await page.getByLabel('Area').fill('Basement');
@@ -305,8 +329,25 @@ test('malformed imports are rejected without replacing valid records', async ({ 
   await expect(page.locator('.toast')).toContainText('not valid JSON');
 });
 
-test('a corrupt legacy state is quarantined and startup recovers', async ({ page }) => {
+test('@claim:import-rollback the passbook before an import is restored if imported state fails startup validation', async ({ page }) => {
   await page.goto('/app');
+  await page.getByRole('button', { name: 'Add an asset' }).click();
+  await page.getByLabel('Area').fill('Basement');
+  await page.getByLabel('Asset name').fill('Prior boiler');
+  await page.getByRole('button', { name: 'Save asset' }).click();
+  await page.getByRole('button', { name: 'Close dialog' }).click();
+  await page.getByRole('button', { name: 'Backup', exact: true }).click();
+  page.once('dialog', (dialog) => dialog.accept());
+  await page.locator('#import-file').setInputFiles({
+    name: 'replacement.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify({
+      version: 1,
+      exportedAt: '2026-08-28T12:00:00.000Z',
+      areas: [{ id: 'replacement-area', name: 'Kitchen', createdAt: '2026-08-28T12:00:00.000Z' }],
+      assets: [{ id: 'replacement-asset', areaId: 'replacement-area', name: 'Replacement fridge', makeModel: '', installedOn: '', createdAt: '2026-08-28T12:00:00.000Z' }],
+      tasks: [], completions: []
+    }))
+  });
+  await expect(page.locator('.toast')).toContainText('Passbook imported.');
   await page.evaluate(async () => {
     const db = await new Promise<IDBDatabase>((resolve, reject) => {
       const request = indexedDB.open('home-service-passbook', 1);
@@ -322,10 +363,24 @@ test('a corrupt legacy state is quarantined and startup recovers', async ({ page
     db.close();
   });
   await page.reload();
-  await expect(page.getByRole('heading', { name: 'No scheduled jobs yet' })).toBeVisible();
-  await expect(page.locator('.toast')).toContainText('Damaged saved data was set aside');
+  await expect(page.locator('.toast')).toContainText('earlier passbook has been restored');
+  await page.getByRole('button', { name: 'Assets' }).click();
+  await expect(page.getByRole('heading', { name: 'Prior boiler' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Replacement fridge' })).toHaveCount(0);
+});
+
+test('@claim:refund-revocation an inactive license verdict locks House Key features', async ({ page }) => {
+  await page.route('https://api.sociobot.in/api/v1/products/home-service-passbook/verify?license=revoked-license', (route) => route.fulfill({ json: { valid: false, reason: 'revoked', expires_at: null } }));
+  await page.addInitScript(() => {
+    localStorage.setItem('sb_license:home-service-passbook', 'revoked-license');
+    localStorage.setItem('sb_license_verdict:home-service-passbook', JSON.stringify({ valid: true, checkedAt: 0, token: 'revoked-license' }));
+  });
+  await page.goto('/app?panel=license');
+  await expect(page.getByRole('heading', { name: 'Add unlimited assets and photos' })).toBeVisible();
+  await expect(page.getByText('This license is no longer active.')).toBeVisible();
+  await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('sb_license_verdict:home-service-passbook') || '{}').valid)).toBe(false);
   await page.reload();
-  await expect(page.getByRole('heading', { name: 'No scheduled jobs yet' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Add unlimited assets and photos' })).toBeVisible();
 });
 
 test('@claim:record-corrections future work is rejected and existing records can be corrected', async ({ page }) => {

@@ -61,5 +61,26 @@
     "where": "record action buttons",
     "test": "npm test -- --grep @claim:record-corrections",
     "sandbox": "demo data; edit an asset, job, and service note; delete the service entry; reload and assert the correction persists"
+  },
+  {
+    "id": "import-validation",
+    "claim": "Import validates every nested record before confirmation.",
+    "where": "README",
+    "test": "npm test -- --grep @claim:import-validation",
+    "sandbox": "a real Boiler exists; malformed nested and malformed JSON files are rejected and the existing record survives reload"
+  },
+  {
+    "id": "import-rollback",
+    "claim": "The prior passbook is retained as a rollback if imported data ever fails startup validation.",
+    "where": "README and import confirmation",
+    "test": "npm test -- --grep @claim:import-rollback",
+    "sandbox": "import a valid replacement, corrupt its stored state, reload, and assert the prior passbook is restored"
+  },
+  {
+    "id": "refund-revocation",
+    "claim": "A refund revokes the license.",
+    "where": "House Key license panel",
+    "test": "npm test -- --grep @claim:refund-revocation",
+    "sandbox": "a mocked Sociobot revoked verdict replaces an optimistic cached verdict and paid features immediately lock"
   }
 ]
