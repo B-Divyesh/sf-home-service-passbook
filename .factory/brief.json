@@ -1,0 +1,11 @@
+{
+  "slug": "home-service-passbook",
+  "title": "Home Service Passbook",
+  "summary": "Track recurring home care and keep proof in a private passbook.",
+  "territory": "utilities",
+  "user": "Households that want to remember recurring home care and retain proof of what was done, without tying maintenance to appliance-cloud apps.",
+  "smallest_useful_product": "Offline PWA with assets and areas, fixed and completion-relative schedules, completion notes and proof, and printable history.",
+  "artifact_class": "pwa-offline",
+  "monetization": "one-time",
+  "constraints": "Local-first attachment storage with explicit export; no safety certification or repair advice; durable backup/import format required."
+}
