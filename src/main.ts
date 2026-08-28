@@ -1,6 +1,6 @@
 import './style.css';
 import { dueState, formatDate, nextDue, scheduleLabel, todayISO } from './date';
-import { clear, enterDemo, exportPayload, isDemo, leaveDemo, load, save, validateImport } from './store';
+import { clear, enterDemo, exportPayload, isDemo, leaveDemo, load, replaceWithImport, save, takeRecoveryNotice, validateImport } from './store';
 import type { AppState, Asset, Completion, Task } from './types';
 
 const root = document.querySelector<HTMLDivElement>('#app')!;
@@ -8,6 +8,14 @@ let state: AppState = { areas: [], assets: [], tasks: [], completions: [] };
 let activePanel: 'due' | 'assets' | 'history' | 'backup' | 'license' = 'due';
 let toastTimer = 0;
 let installPrompt: Event | null = null;
+
+const PRODUCT_SLUG = 'home-service-passbook';
+const LICENSE_KEY = `sb_license:${PRODUCT_SLUG}`;
+const VERDICT_KEY = `sb_license_verdict:${PRODUCT_SLUG}`;
+const CHECKOUT_URL = `https://api.sociobot.in/api/v1/products/${PRODUCT_SLUG}/checkout`;
+const VERIFY_URL = `https://api.sociobot.in/api/v1/products/${PRODUCT_SLUG}/verify`;
+
+interface CachedVerdict { valid: boolean; checkedAt: number; token: string }
 
 const titles: Record<string, string> = {
   '/': 'Home Service Passbook — Track home maintenance',
@@ -43,7 +51,7 @@ function shell(content: string): string {
       <footer class="site-footer">
         <p><strong>Home Service Passbook</strong><br>Household-owned maintenance records.</p>
         <div><a href="/privacy" data-link>Privacy</a><a href="/terms" data-link>Terms</a></div>
-        <p>Built by Param Factory · v1.0.0<br>Original generated artwork.</p>
+        <p>Built by Param Factory · v1.0.1<br>Original generated artwork.</p>
       </footer>
       <div class="route-status sr-only" aria-live="polite"></div>
       <div class="toast" role="status" aria-live="polite" hidden></div>
@@ -108,7 +116,7 @@ function landing(): string {
     </section>
     <section class="paid" aria-labelledby="paid-title">
       <div><p class="eyebrow">House Key</p><h2 id="paid-title">Keep more than five assets</h2><p>One $19 purchase adds unlimited assets and local photo attachments. Backup, print, and accessibility stay free.</p></div>
-      <div><a class="button primary" href="https://api.sociobot.in/api/v1/products/home-service-passbook/checkout">Buy House Key — $19</a><a href="/app?panel=license" data-link>Restore a license</a></div>
+      <div><a class="button primary" href="${CHECKOUT_URL}">Buy House Key — $19</a><a class="touch-link" href="/app?panel=license" data-link>Restore a license</a></div>
     </section>`);
 }
 
@@ -151,9 +159,9 @@ function taskRow(task: Task): string {
   const due = nextDue(task, state.completions);
   const status = dueState(due);
   const last = state.completions.filter((item) => item.taskId === task.id).sort((a, b) => b.completedOn.localeCompare(a.completedOn))[0];
-  return `<article class="task-row">
+  return `<article class="task-row" data-task-row="${task.id}">
     <div class="task-status"><span class="status ${status}">${status === 'later' ? 'Scheduled' : status === 'soon' ? 'Due soon' : 'Overdue'}</span></div>
-    <div><h2>${escapeHtml(task.name)}</h2><p>${escapeHtml(asset?.name ?? 'Unknown asset')} · ${escapeHtml(area?.name ?? 'No area')}</p><small>${scheduleLabel(task.mode)} ${task.intervalMonths} ${task.intervalMonths === 1 ? 'month' : 'months'} · Last done ${formatDate(last?.completedOn)}</small></div>
+    <div><h2>${escapeHtml(task.name)}</h2><p>${escapeHtml(asset?.name ?? 'Unknown asset')} · ${escapeHtml(area?.name ?? 'No area')}</p><small>${scheduleLabel(task.mode)} ${task.intervalMonths} ${task.intervalMonths === 1 ? 'month' : 'months'} · Last done ${formatDate(last?.completedOn)}</small><div class="record-actions"><button class="text-button" data-edit-task="${task.id}">Edit job</button><button class="text-button danger-link" data-delete-task="${task.id}">Delete job</button></div></div>
     <div class="due-readout"><small>Due</small><strong>${formatDate(due)}</strong><button class="button compact" data-complete="${task.id}">Record work</button></div>
   </article>`;
 }
@@ -164,7 +172,7 @@ function assetsPanel(): string {
     <div class="asset-list">${state.assets.map((asset) => {
       const area = state.areas.find((item) => item.id === asset.areaId);
       const tasks = state.tasks.filter((item) => item.assetId === asset.id);
-      return `<article><div><p class="asset-area">${escapeHtml(area?.name ?? 'No area')}</p><h2>${escapeHtml(asset.name)}</h2><p>${escapeHtml(asset.makeModel || 'No make or model recorded')}</p><small>Installed ${formatDate(asset.installedOn)}</small></div><div class="asset-jobs"><strong>${tasks.length} ${tasks.length === 1 ? 'job' : 'jobs'}</strong>${tasks.map((task) => `<span>${escapeHtml(task.name)}</span>`).join('')}<button class="text-button" data-task-asset="${asset.id}">Add recurring job</button></div></article>`;
+      return `<article data-asset-row="${asset.id}"><div><p class="asset-area">${escapeHtml(area?.name ?? 'No area')}</p><h2>${escapeHtml(asset.name)}</h2><p>${escapeHtml(asset.makeModel || 'No make or model recorded')}</p><small>Installed ${formatDate(asset.installedOn)}</small><div class="record-actions"><button class="text-button" data-edit-asset="${asset.id}">Edit asset</button><button class="text-button danger-link" data-delete-asset="${asset.id}">Delete asset</button></div></div><div class="asset-jobs"><strong>${tasks.length} ${tasks.length === 1 ? 'job' : 'jobs'}</strong>${tasks.map((task) => `<span>${escapeHtml(task.name)}</span>`).join('')}<button class="text-button" data-task-asset="${asset.id}">Add recurring job</button></div></article>`;
     }).join('')}</div>`;
 }
 
@@ -178,7 +186,7 @@ function historyPanel(): string {
 function historyRow(record: Completion): string {
   const task = state.tasks.find((item) => item.id === record.taskId);
   const asset = state.assets.find((item) => item.id === task?.assetId);
-  return `<article><time datetime="${record.completedOn}">${formatDate(record.completedOn)}</time><div><h2>${escapeHtml(task?.name ?? 'Removed job')}</h2><p><strong>${escapeHtml(asset?.name ?? 'Removed asset')}</strong>${record.note ? ` · ${escapeHtml(record.note)}` : ''}</p>${record.receiptRef ? `<small>Receipt: ${escapeHtml(record.receiptRef)}</small>` : ''}${record.attachment ? `<a class="attachment" href="${record.attachment.dataUrl}" download="${escapeHtml(record.attachment.name)}">Download ${escapeHtml(record.attachment.name)}</a>` : ''}</div></article>`;
+  return `<article data-history-row="${record.id}"><time datetime="${record.completedOn}">${formatDate(record.completedOn)}</time><div><h2>${escapeHtml(task?.name ?? 'Removed job')}</h2><p><strong>${escapeHtml(asset?.name ?? 'Removed asset')}</strong>${record.note ? ` · ${escapeHtml(record.note)}` : ''}</p>${record.receiptRef ? `<small>Receipt: ${escapeHtml(record.receiptRef)}</small>` : ''}${record.attachment ? `<a class="attachment" href="${record.attachment.dataUrl}" download="${escapeHtml(record.attachment.name)}">Download ${escapeHtml(record.attachment.name)}</a>` : ''}<div class="record-actions print-hide"><button class="text-button" data-edit-completion="${record.id}">Edit entry</button><button class="text-button danger-link" data-delete-completion="${record.id}">Delete entry</button></div></div></article>`;
 }
 
 function backupPanel(): string {
@@ -190,11 +198,11 @@ function backupPanel(): string {
 
 function licensePanel(): string {
   const licensed = hasValidCachedLicense();
-  const inactive = Boolean(localStorage.getItem('sb_license:home-service-passbook')) && !licensed;
+  const inactive = Boolean(localStorage.getItem(LICENSE_KEY)) && !licensed;
   return `<div class="license-panel">
     <div><p class="eyebrow">One-time purchase</p><h2>${licensed ? 'House Key is active' : 'Add unlimited assets and photos'}</h2><p>${licensed ? 'This browser can add unlimited assets and attach photos to service entries.' : 'Free passbooks hold five assets. A $19 House Key removes that limit and adds local photo attachments.'}</p></div>
     ${inactive ? '<p class="locked-note">This license is no longer active. Paste another license or buy a new House Key.</p>' : ''}
-    ${licensed ? '<p class="license-active"><span aria-hidden="true">●</span> License active</p>' : `<a class="button primary" href="https://api.sociobot.in/api/v1/products/home-service-passbook/checkout">Buy House Key — $19</a>
+    ${licensed ? '<p class="license-active"><span aria-hidden="true">●</span> License active</p>' : `<a class="button primary" href="${CHECKOUT_URL}">Buy House Key — $19</a>
     <form id="license-form"><label for="license-token">Have a license? Paste it here</label><div><input id="license-token" name="license" autocomplete="off" required><button class="button secondary" type="submit">Verify license</button></div><p class="form-message" aria-live="polite"></p></form>`}
     <p class="fine-print">Sociobot/Dodo is the merchant of record. Refunds are handled there. A refund revokes the license.</p>
   </div>`;
@@ -223,7 +231,7 @@ function dialogs(): string {
       <label for="completed-on">Completed on</label><input id="completed-on" name="date" type="date" value="${todayISO()}" required>
       <label for="work-note">What was done <span>optional</span></label><textarea id="work-note" name="note" rows="3" maxlength="500"></textarea>
       <label for="receipt-ref">Receipt or invoice reference <span>optional</span></label><input id="receipt-ref" name="receipt" maxlength="120">
-      ${hasValidCachedLicense() ? '<label for="proof-file">Photo or receipt file <span>optional, 3 MB maximum</span></label><input id="proof-file" name="proof" type="file" accept="image/*,application/pdf">' : '<p class="locked-note">House Key adds local photo attachments. Notes and receipt references stay free.</p>'}
+      ${hasValidCachedLicense() ? '<label for="proof-file">Photo or receipt file <span>optional, 3 MB maximum</span></label><input id="proof-file" name="proof" type="file" accept="image/*,application/pdf"><label class="remove-attachment" hidden><input name="removeProof" type="checkbox"> Remove the saved attachment</label>' : '<p class="locked-note">House Key adds local photo attachments. Notes and receipt references stay free.</p>'}
       <p class="form-message" aria-live="polite"></p><div class="dialog-actions"><button class="button secondary" type="button" data-close>Cancel</button><button class="button primary" type="submit">Save service entry</button></div></form></dialog>`;
 }
 
@@ -277,18 +285,26 @@ function bindEvents(): void {
     history.pushState({}, '', isDemo() ? `/demo?panel=${activePanel}` : activePanel === 'history' ? '/history' : activePanel === 'backup' ? '/backup' : `/app?panel=${activePanel}`);
     void render(true);
   }));
-  root.querySelectorAll<HTMLButtonElement>('[data-open]').forEach((button) => button.addEventListener('click', () => openDialog(button.dataset.open!)));
+  root.querySelectorAll<HTMLButtonElement>('[data-open]').forEach((button) => button.addEventListener('click', () => { resetDialog(button.dataset.open!); openDialog(button.dataset.open!); }));
   root.querySelectorAll<HTMLButtonElement>('[data-close]').forEach((button) => button.addEventListener('click', () => button.closest('dialog')?.close()));
   root.querySelectorAll<HTMLButtonElement>('[data-complete]').forEach((button) => button.addEventListener('click', () => {
+    resetDialog('completion-dialog');
     openDialog('completion-dialog');
     const select = root.querySelector<HTMLSelectElement>('#complete-task');
     if (select) select.value = button.dataset.complete!;
   }));
   root.querySelectorAll<HTMLButtonElement>('[data-task-asset]').forEach((button) => button.addEventListener('click', () => {
+    resetDialog('task-dialog');
     openDialog('task-dialog');
     const select = root.querySelector<HTMLSelectElement>('#task-asset');
     if (select) select.value = button.dataset.taskAsset!;
   }));
+  root.querySelectorAll<HTMLButtonElement>('[data-edit-asset]').forEach((button) => button.addEventListener('click', () => editAsset(button.dataset.editAsset!)));
+  root.querySelectorAll<HTMLButtonElement>('[data-edit-task]').forEach((button) => button.addEventListener('click', () => editTask(button.dataset.editTask!)));
+  root.querySelectorAll<HTMLButtonElement>('[data-edit-completion]').forEach((button) => button.addEventListener('click', () => editCompletion(button.dataset.editCompletion!)));
+  root.querySelectorAll<HTMLButtonElement>('[data-delete-asset]').forEach((button) => button.addEventListener('click', () => void deleteAsset(button.dataset.deleteAsset!)));
+  root.querySelectorAll<HTMLButtonElement>('[data-delete-task]').forEach((button) => button.addEventListener('click', () => void deleteTask(button.dataset.deleteTask!)));
+  root.querySelectorAll<HTMLButtonElement>('[data-delete-completion]').forEach((button) => button.addEventListener('click', () => void deleteCompletion(button.dataset.deleteCompletion!)));
   root.querySelector('[data-action="reset-demo"]')?.addEventListener('click', async () => { state = await enterDemo(true); await render(); showToast('Demo reset to its original records.'); });
   root.querySelector('[data-action="leave-demo"]')?.addEventListener('click', async () => { await clear(); leaveDemo(); activePanel = 'due'; history.pushState({}, '', '/app'); await render(true); });
   root.querySelector('[data-action="print"]')?.addEventListener('click', () => window.print());
@@ -299,6 +315,120 @@ function bindEvents(): void {
   root.querySelector<HTMLFormElement>('#completion-form')?.addEventListener('submit', completeTask);
   root.querySelector<HTMLFormElement>('#license-form')?.addEventListener('submit', restoreLicense);
   root.querySelectorAll<HTMLDialogElement>('dialog').forEach((dialog) => dialog.addEventListener('click', (event) => { if (event.target === dialog) dialog.close(); }));
+}
+
+function resetDialog(id: string): void {
+  const form = root.querySelector<HTMLFormElement>(`#${id} form`);
+  if (!form) return;
+  form.reset();
+  delete form.dataset.editId;
+  const heading = form.querySelector('h2');
+  const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+  const labels: Record<string, [string, string]> = {
+    'asset-dialog': ['Add an asset', 'Save asset'],
+    'task-dialog': ['Add a recurring job', 'Save recurring job'],
+    'completion-dialog': ['Record completed work', 'Save service entry']
+  };
+  if (heading && labels[id]) heading.textContent = labels[id][0];
+  if (submit && labels[id]) submit.textContent = labels[id][1];
+  const remove = form.querySelector<HTMLElement>('.remove-attachment');
+  if (remove) remove.hidden = true;
+  formError(form, '');
+}
+
+function editAsset(id: string): void {
+  const asset = state.assets.find((item) => item.id === id);
+  if (!asset) return;
+  resetDialog('asset-dialog');
+  const form = root.querySelector<HTMLFormElement>('#asset-form')!;
+  form.dataset.editId = id;
+  form.querySelector('h2')!.textContent = 'Edit asset';
+  form.querySelector<HTMLButtonElement>('button[type="submit"]')!.textContent = 'Save changes';
+  (form.elements.namedItem('area') as HTMLInputElement).value = state.areas.find((item) => item.id === asset.areaId)?.name ?? '';
+  (form.elements.namedItem('asset') as HTMLInputElement).value = asset.name;
+  (form.elements.namedItem('model') as HTMLInputElement).value = asset.makeModel;
+  (form.elements.namedItem('installed') as HTMLInputElement).value = asset.installedOn;
+  openDialog('asset-dialog');
+}
+
+function editTask(id: string): void {
+  const task = state.tasks.find((item) => item.id === id);
+  if (!task) return;
+  resetDialog('task-dialog');
+  const form = root.querySelector<HTMLFormElement>('#task-form')!;
+  form.dataset.editId = id;
+  form.querySelector('h2')!.textContent = 'Edit recurring job';
+  form.querySelector<HTMLButtonElement>('button[type="submit"]')!.textContent = 'Save changes';
+  (form.elements.namedItem('asset') as HTMLSelectElement).value = task.assetId;
+  (form.elements.namedItem('name') as HTMLInputElement).value = task.name;
+  (form.elements.namedItem('mode') as RadioNodeList).value = task.mode;
+  (form.elements.namedItem('interval') as HTMLInputElement).value = String(task.intervalMonths);
+  (form.elements.namedItem('start') as HTMLInputElement).value = task.startDate;
+  openDialog('task-dialog');
+}
+
+function editCompletion(id: string): void {
+  const completion = state.completions.find((item) => item.id === id);
+  if (!completion) return;
+  resetDialog('completion-dialog');
+  const form = root.querySelector<HTMLFormElement>('#completion-form')!;
+  form.dataset.editId = id;
+  form.querySelector('h2')!.textContent = 'Edit service entry';
+  form.querySelector<HTMLButtonElement>('button[type="submit"]')!.textContent = 'Save changes';
+  (form.elements.namedItem('task') as HTMLSelectElement).value = completion.taskId;
+  (form.elements.namedItem('date') as HTMLInputElement).value = completion.completedOn;
+  (form.elements.namedItem('note') as HTMLTextAreaElement).value = completion.note;
+  (form.elements.namedItem('receipt') as HTMLInputElement).value = completion.receiptRef;
+  const remove = form.querySelector<HTMLElement>('.remove-attachment');
+  if (remove) remove.hidden = !completion.attachment;
+  openDialog('completion-dialog');
+}
+
+async function deleteAsset(id: string): Promise<void> {
+  const asset = state.assets.find((item) => item.id === id);
+  if (!asset) return;
+  const taskIds = new Set(state.tasks.filter((item) => item.assetId === id).map((item) => item.id));
+  const entryCount = state.completions.filter((item) => taskIds.has(item.taskId)).length;
+  if (!confirm(`Delete ${asset.name}, its ${taskIds.size} jobs, and ${entryCount} service entries?`)) return;
+  state.assets = state.assets.filter((item) => item.id !== id);
+  state.tasks = state.tasks.filter((item) => !taskIds.has(item.id));
+  state.completions = state.completions.filter((item) => !taskIds.has(item.taskId));
+  removeUnusedAreas();
+  await persist('Asset and its records deleted.');
+  await render();
+}
+
+async function deleteTask(id: string): Promise<void> {
+  const task = state.tasks.find((item) => item.id === id);
+  if (!task) return;
+  const entryCount = state.completions.filter((item) => item.taskId === id).length;
+  if (!confirm(`Delete ${task.name} and its ${entryCount} service entries?`)) return;
+  state.tasks = state.tasks.filter((item) => item.id !== id);
+  state.completions = state.completions.filter((item) => item.taskId !== id);
+  await persist('Recurring job and its service entries deleted.');
+  await render();
+}
+
+async function deleteCompletion(id: string): Promise<void> {
+  const completion = state.completions.find((item) => item.id === id);
+  if (!completion || !confirm(`Delete the service entry from ${formatDate(completion.completedOn)}?`)) return;
+  state.completions = state.completions.filter((item) => item.id !== id);
+  refreshLastCompleted(completion.taskId);
+  await persist('Service entry deleted.');
+  await render();
+}
+
+function removeUnusedAreas(): void {
+  const used = new Set(state.assets.map((item) => item.areaId));
+  state.areas = state.areas.filter((item) => used.has(item.id));
+}
+
+function refreshLastCompleted(taskId: string): void {
+  const task = state.tasks.find((item) => item.id === taskId);
+  if (!task) return;
+  const last = state.completions.filter((item) => item.taskId === taskId).sort((a, b) => b.completedOn.localeCompare(a.completedOn))[0];
+  if (last) task.lastCompletedOn = last.completedOn;
+  else delete task.lastCompletedOn;
 }
 
 function openDialog(id: string): void {
@@ -320,12 +450,17 @@ async function addAsset(event: SubmitEvent): Promise<void> {
   const areaName = String(data.get('area')).trim();
   let area = state.areas.find((item) => item.name.toLowerCase() === areaName.toLowerCase());
   if (!area) { area = { id: uid('area'), name: areaName, createdAt: new Date().toISOString() }; state.areas.push(area); }
-  const asset: Asset = { id: uid('asset'), areaId: area.id, name: String(data.get('asset')).trim(), makeModel: String(data.get('model')).trim(), installedOn: String(data.get('installed')), createdAt: new Date().toISOString() };
-  state.assets.push(asset);
-  await persist('Asset saved. Add its first recurring job.');
+  const editId = form.dataset.editId;
+  const existing = editId ? state.assets.find((item) => item.id === editId) : undefined;
+  const asset: Asset = { id: existing?.id ?? uid('asset'), areaId: area.id, name: String(data.get('asset')).trim(), makeModel: String(data.get('model')).trim(), installedOn: String(data.get('installed')), createdAt: existing?.createdAt ?? new Date().toISOString() };
+  if (existing) state.assets[state.assets.indexOf(existing)] = asset;
+  else state.assets.push(asset);
+  removeUnusedAreas();
+  await persist(existing ? 'Asset changes saved.' : 'Asset saved. Add its first recurring job.');
   activePanel = 'assets';
   await render();
-  openDialog('task-dialog');
+  if (existing) return;
+  resetDialog('task-dialog'); openDialog('task-dialog');
   const select = root.querySelector<HTMLSelectElement>('#task-asset');
   if (select) select.value = asset.id;
 }
@@ -334,8 +469,13 @@ async function addTask(event: SubmitEvent): Promise<void> {
   event.preventDefault();
   const form = event.currentTarget as HTMLFormElement;
   const data = new FormData(form);
-  state.tasks.push({ id: uid('task'), assetId: String(data.get('asset')), name: String(data.get('name')).trim(), mode: String(data.get('mode')) as Task['mode'], intervalMonths: Number(data.get('interval')), startDate: String(data.get('start')), createdAt: new Date().toISOString() });
-  await persist('Recurring job saved.');
+  const editId = form.dataset.editId;
+  const existing = editId ? state.tasks.find((item) => item.id === editId) : undefined;
+  const task: Task = { id: existing?.id ?? uid('task'), assetId: String(data.get('asset')), name: String(data.get('name')).trim(), mode: String(data.get('mode')) as Task['mode'], intervalMonths: Number(data.get('interval')), startDate: String(data.get('start')), createdAt: existing?.createdAt ?? new Date().toISOString() };
+  if (existing?.lastCompletedOn) task.lastCompletedOn = existing.lastCompletedOn;
+  if (existing) state.tasks[state.tasks.indexOf(existing)] = task;
+  else state.tasks.push(task);
+  await persist(existing ? 'Recurring job changes saved.' : 'Recurring job saved.');
   activePanel = 'due';
   await render();
 }
@@ -345,13 +485,25 @@ async function completeTask(event: SubmitEvent): Promise<void> {
   const form = event.currentTarget as HTMLFormElement;
   const data = new FormData(form);
   const file = data.get('proof') as File | null;
+  const completedOn = String(data.get('date'));
+  if (completedOn > todayISO()) {
+    formError(form, 'Completed work cannot be dated in the future. Choose today or an earlier date.');
+    const input = form.elements.namedItem('date') as HTMLInputElement;
+    input.focus();
+    return;
+  }
   if (file && file.size > 3_000_000) return formError(form, 'The file is over 3 MB. Choose a smaller photo or PDF.');
-  const record: Completion = { id: uid('done'), taskId: String(data.get('task')), completedOn: String(data.get('date')), note: String(data.get('note')).trim(), receiptRef: String(data.get('receipt')).trim(), createdAt: new Date().toISOString() };
+  const editId = form.dataset.editId;
+  const existing = editId ? state.completions.find((item) => item.id === editId) : undefined;
+  const oldTaskId = existing?.taskId;
+  const record: Completion = { id: existing?.id ?? uid('done'), taskId: String(data.get('task')), completedOn, note: String(data.get('note')).trim(), receiptRef: String(data.get('receipt')).trim(), createdAt: existing?.createdAt ?? new Date().toISOString() };
+  if (existing?.attachment && data.get('removeProof') !== 'on') record.attachment = existing.attachment;
   if (file?.size) record.attachment = { name: file.name, type: file.type, dataUrl: await fileToDataUrl(file) };
-  state.completions.push(record);
-  const task = state.tasks.find((item) => item.id === record.taskId);
-  if (task) task.lastCompletedOn = record.completedOn;
-  await persist('Service entry saved. The next due date is updated.');
+  if (existing) state.completions[state.completions.indexOf(existing)] = record;
+  else state.completions.push(record);
+  if (oldTaskId && oldTaskId !== record.taskId) refreshLastCompleted(oldTaskId);
+  refreshLastCompleted(record.taskId);
+  await persist(existing ? 'Service entry changes saved.' : 'Service entry saved. The next due date is updated.');
   await render();
 }
 
@@ -377,9 +529,12 @@ async function importBackup(event: Event): Promise<void> {
   const file = input.files?.[0];
   if (!file) return;
   try {
-    const imported = validateImport(JSON.parse(await file.text()));
+    let parsed: unknown;
+    try { parsed = JSON.parse(await file.text()); }
+    catch { throw new Error('The backup is not valid JSON. Choose an exported passbook file.'); }
+    const imported = validateImport(parsed);
     if (!confirm(`Replace this passbook with ${imported.assets.length} assets and ${imported.completions.length} service entries?`)) { input.value = ''; return; }
-    state = imported; await save(state); await render(); showToast('Passbook imported.');
+    await replaceWithImport(imported); state = imported; await render(); showToast('Passbook imported. Your earlier records can be restored if startup validation fails.');
   } catch (error) { showToast(error instanceof Error ? error.message : 'The backup could not be read. Choose an exported JSON file.'); input.value = ''; }
 }
 
@@ -389,7 +544,15 @@ function formError(form: HTMLFormElement, message: string): void {
 }
 
 function hasValidCachedLicense(): boolean {
-  try { return JSON.parse(localStorage.getItem('sb_license_verdict:home-service-passbook') || '{}').valid === true; } catch { return false; }
+  const token = localStorage.getItem(LICENSE_KEY);
+  if (!token) {
+    localStorage.removeItem(VERDICT_KEY);
+    return false;
+  }
+  try {
+    const cached = JSON.parse(localStorage.getItem(VERDICT_KEY) || '{}') as Partial<CachedVerdict>;
+    return cached.valid === true && cached.token === token;
+  } catch { return false; }
 }
 
 async function restoreLicense(event: SubmitEvent): Promise<void> {
@@ -398,11 +561,12 @@ async function restoreLicense(event: SubmitEvent): Promise<void> {
   const token = String(new FormData(form).get('license')).trim();
   formError(form, 'Checking this license…');
   try {
-    const response = await fetch(`https://api.sociobot.in/api/v1/products/home-service-passbook/verify?license=${encodeURIComponent(token)}`);
+    const response = await fetch(`${VERIFY_URL}?license=${encodeURIComponent(token)}`);
+    if (!response.ok) throw new Error('verification unavailable');
     const verdict = await response.json() as { valid: boolean };
     if (!verdict.valid) return formError(form, 'This license is not active. Check the token or buy a new House Key.');
-    localStorage.setItem('sb_license:home-service-passbook', token);
-    localStorage.setItem('sb_license_verdict:home-service-passbook', JSON.stringify({ valid: true, checkedAt: Date.now() }));
+    localStorage.setItem(LICENSE_KEY, token);
+    localStorage.setItem(VERDICT_KEY, JSON.stringify({ valid: true, checkedAt: Date.now(), token } satisfies CachedVerdict));
     await render(); showToast('House Key is active on this browser.');
   } catch { formError(form, 'The license service could not be reached. Check your connection and try again.'); }
 }
@@ -411,22 +575,24 @@ function captureReturnedLicense(): void {
   const params = new URLSearchParams(location.search);
   const token = params.get('license');
   if (!token) return;
-  localStorage.setItem('sb_license:home-service-passbook', token);
-  localStorage.setItem('sb_license_verdict:home-service-passbook', JSON.stringify({ valid: true, checkedAt: 0 }));
+  localStorage.setItem(LICENSE_KEY, token);
+  localStorage.setItem(VERDICT_KEY, JSON.stringify({ valid: false, checkedAt: 0, token } satisfies CachedVerdict));
   params.delete('license');
   const query = params.toString();
   history.replaceState({}, '', `${location.pathname}${query ? `?${query}` : ''}`);
 }
 
 async function recheckLicense(): Promise<void> {
-  const token = localStorage.getItem('sb_license:home-service-passbook');
+  const token = localStorage.getItem(LICENSE_KEY);
   if (!token) return;
-  const cached = JSON.parse(localStorage.getItem('sb_license_verdict:home-service-passbook') || '{}') as { checkedAt?: number };
-  if (cached.checkedAt && Date.now() - cached.checkedAt < 86400000) return;
+  let cached: Partial<CachedVerdict> = {};
+  try { cached = JSON.parse(localStorage.getItem(VERDICT_KEY) || '{}') as Partial<CachedVerdict>; } catch { /* Recheck malformed cache. */ }
+  if (cached.token === token && cached.checkedAt && Date.now() - cached.checkedAt < 86400000) return;
   try {
-    const response = await fetch(`https://api.sociobot.in/api/v1/products/home-service-passbook/verify?license=${encodeURIComponent(token)}`);
+    const response = await fetch(`${VERIFY_URL}?license=${encodeURIComponent(token)}`);
+    if (!response.ok) return;
     const verdict = await response.json() as { valid: boolean };
-    localStorage.setItem('sb_license_verdict:home-service-passbook', JSON.stringify({ valid: verdict.valid, checkedAt: Date.now() }));
+    localStorage.setItem(VERDICT_KEY, JSON.stringify({ valid: verdict.valid, checkedAt: Date.now(), token } satisfies CachedVerdict));
     if (!verdict.valid && activePanel === 'license') await render();
   } catch { /* Keep the cached state while offline. */ }
 }
@@ -458,6 +624,8 @@ void (async () => {
   try {
     captureReturnedLicense();
     await render();
+    const recovery = takeRecoveryNotice();
+    if (recovery) showToast(recovery);
     void recheckLicense();
     await registerServiceWorker();
     void installPrompt;

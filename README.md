@@ -13,6 +13,7 @@ Demo: <https://home-service-passbook.sociobot.in/demo>
 - Stores areas, assets, and recurring jobs in the browser.
 - Supports fixed calendar and completion-relative recurrence.
 - Records service dates, notes, receipt references, and licensed photo attachments.
+- Lets you edit or delete assets, recurring jobs, and service entries.
 - Exports and imports one complete JSON backup.
 - Prints a clean service history.
 - Works offline after the first visit.
@@ -45,7 +46,7 @@ npm run preview
 
 Passbook data stays in browser IndexedDB unless the user exports it. License verification sends only the license token to `api.sociobot.in`. There are no analytics, third-party scripts, or remote fonts.
 
-Export JSON before clearing site data or moving devices. Import replaces the open passbook after confirmation.
+Export JSON before clearing site data or moving devices. Import validates every nested record before confirmation. The prior passbook is retained as a rollback if imported data ever fails startup validation.
 
 ## Scope
 

@@ -4,7 +4,7 @@
     "claim": "The demo uses sample data and never writes to the real passbook.",
     "where": "demo banner and README",
     "test": "npm test -- --grep @claim:demo-sandbox",
-    "sandbox": "fresh browser context at /demo; leave demo and assert the real passbook is empty"
+    "sandbox": "seed a real Boiler, enter and reset /demo, leave demo, then prove Boiler remains and demo Furnace does not cross namespaces"
   },
   {
     "id": "recurrence-rules",
@@ -15,17 +15,17 @@
   },
   {
     "id": "json-backup",
-    "claim": "Exports and imports one complete JSON backup.",
+    "claim": "Exports and imports one complete JSON backup, including attached photos.",
     "where": "backup panel and README",
     "test": "npm test -- --grep @claim:json-backup",
-    "sandbox": "demo data; parse all four record collections, import into the real namespace, and retrieve an asset"
+    "sandbox": "demo data; parse all four collections, round-trip into the real namespace, and separately prove a licensed attachment persists and exports"
   },
   {
     "id": "local-only",
-    "claim": "Records stay in this browser.",
-    "where": "landing facts and privacy page",
+    "claim": "Records stay in this browser; the app loads no analytics, third-party scripts, or remote fonts.",
+    "where": "landing facts, privacy page, and README",
     "test": "npm test -- --grep @claim:local-only",
-    "sandbox": "intercept the complete demo browse flow and assert no cross-origin requests"
+    "sandbox": "intercept demo load, browsing, and export; assert every request stays on the product origin"
   },
   {
     "id": "offline-reload",
@@ -36,10 +36,10 @@
   },
   {
     "id": "house-key-limit",
-    "claim": "The free passbook holds five assets; House Key removes the limit, adds local photo attachments, and verifies only its token.",
+    "claim": "The free passbook holds five assets; House Key costs $19 once, removes the limit, adds local photo attachments, and leaves backup, print, and accessibility free.",
     "where": "landing paid section, license panel, privacy page, and README",
     "test": "npm test -- --grep @claim:house-key-limit",
-    "sandbox": "seed five local assets, assert the sixth is gated, verify the $19 checkout URL, mock token verification, and assert the asset form opens"
+    "sandbox": "seed five assets; reject an orphan verdict; verify the $19 checkout URL; mock a token-bound verdict; persist, reload, retrieve, and export a photo; check free controls"
   },
   {
     "id": "service-log",
@@ -54,5 +54,12 @@
     "where": "history toolbar and README",
     "test": "npm test -- --grep @claim:print-history",
     "sandbox": "demo history; intercept and assert the browser print action"
+  },
+  {
+    "id": "record-corrections",
+    "claim": "Assets, recurring jobs, and service entries can be corrected or deleted.",
+    "where": "record action buttons",
+    "test": "npm test -- --grep @claim:record-corrections",
+    "sandbox": "demo data; edit an asset, job, and service note; delete the service entry; reload and assert the correction persists"
   }
 ]
