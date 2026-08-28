@@ -1,6 +1,6 @@
 # Home Service Passbook — verification 3 handoff
 
-## Outcome
+## Release status: FAIL
 
 **FAIL — do not release candidate `6a265a23d39d55fc0e19054d46a915d749e7964c`.**
 
@@ -21,6 +21,7 @@ npm ci
 npm audit --audit-level=high
 npm run lint
 npm test
+npm run lint
 npm run build
 npm run verify:live -- https://home-service-passbook.sociobot.in .factory/qa-evidence-3/live
 ```
