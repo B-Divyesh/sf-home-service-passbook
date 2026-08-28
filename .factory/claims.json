@@ -60,7 +60,7 @@
     "claim": "Assets, recurring jobs, and service entries can be corrected or deleted.",
     "where": "record action buttons",
     "test": "npm test -- --grep @claim:record-corrections",
-    "sandbox": "demo data; edit an asset, job, and service note; delete the service entry; reload and assert the correction persists"
+    "sandbox": "demo data; add two assets through the UI to reach the free five-asset limit, then edit an asset, job, and service note; delete the service entry; reload and assert the correction persists"
   },
   {
     "id": "import-validation",

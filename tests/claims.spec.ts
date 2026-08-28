@@ -1,6 +1,20 @@
 import { expect, test } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
+/**
+ * Exercise the same save path a household uses.  Claim tests must not assume
+ * that IndexedDB already contains a `state` record and then mutate it from
+ * page.evaluate: a fresh demo is populated asynchronously on first entry.
+ */
+async function addAssetThroughPassbook(page: import('@playwright/test').Page, area: string, asset: string): Promise<void> {
+  await page.getByRole('button', { name: 'Add an asset' }).click();
+  await page.getByLabel('Area').fill(area);
+  await page.getByLabel('Asset name').fill(asset);
+  await page.getByRole('button', { name: 'Save asset' }).click();
+  await expect(page.getByRole('heading', { name: 'Add a recurring job' })).toBeVisible();
+  await page.getByRole('button', { name: 'Close dialog' }).click();
+}
+
 test('@claim:demo-sandbox demo is filled and isolated from real data', async ({ page }) => {
   await page.goto('/app');
   await page.getByRole('button', { name: 'Add an asset' }).click();
@@ -391,33 +405,8 @@ test('@claim:refund-revocation an inactive license verdict locks House Key featu
   await expect(page.getByRole('heading', { name: 'Add unlimited assets and photos' })).toBeVisible();
 });
 
-test('@claim:record-corrections future work is rejected and existing records can be corrected', async ({ page }) => {
+test('@claim:record-corrections future work is rejected and existing records can be corrected at the five-asset limit', async ({ page }) => {
   await page.goto('/demo');
-  await page.evaluate(async () => {
-    const db = await new Promise<IDBDatabase>((resolve, reject) => {
-      const request = indexedDB.open('demo:home-service-passbook', 1);
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => reject(request.error);
-    });
-    const state = await new Promise<any>((resolve, reject) => {
-      const transaction = db.transaction('passbook', 'readonly');
-      const request = transaction.objectStore('passbook').get('state');
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => reject(request.error);
-    });
-    state.assets.push(
-      { id: 'asset-limit-4', areaId: state.areas[0].id, name: 'Sump pump', makeModel: '', installedOn: '', createdAt: '2026-08-28T12:00:00.000Z' },
-      { id: 'asset-limit-5', areaId: state.areas[0].id, name: 'Dehumidifier', makeModel: '', installedOn: '', createdAt: '2026-08-28T12:00:00.000Z' }
-    );
-    await new Promise<void>((resolve, reject) => {
-      const transaction = db.transaction('passbook', 'readwrite');
-      transaction.objectStore('passbook').put(state, 'state');
-      transaction.oncomplete = () => resolve();
-      transaction.onerror = () => reject(transaction.error);
-    });
-    db.close();
-  });
-  await page.reload();
   await page.getByRole('button', { name: 'Record completed work' }).click();
   await page.getByLabel('Completed on').fill('2099-12-31');
   await page.getByRole('button', { name: 'Save service entry' }).click();
@@ -426,6 +415,14 @@ test('@claim:record-corrections future work is rejected and existing records can
   await page.getByRole('button', { name: 'Close dialog' }).click();
 
   await page.getByRole('button', { name: 'Assets' }).click();
+  // The sample starts with three assets. Add two via the product UI so this
+  // regression covers a real five-asset free passbook without depending on
+  // an implementation-specific IndexedDB record being present.
+  await addAssetThroughPassbook(page, 'Basement', 'Sump pump');
+  await page.getByRole('button', { name: 'Assets' }).click();
+  await addAssetThroughPassbook(page, 'Basement', 'Dehumidifier');
+  await page.getByRole('button', { name: 'Assets' }).click();
+  await expect(page.locator('[data-asset-row]')).toHaveCount(5);
   const furnace = page.locator('[data-asset-row]').filter({ hasText: 'Furnace' });
   await furnace.getByRole('button', { name: 'Edit asset' }).click();
   await page.getByLabel('Asset name').fill('Main furnace');

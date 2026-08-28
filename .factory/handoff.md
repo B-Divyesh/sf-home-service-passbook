@@ -1,18 +1,16 @@
-# Home Service Passbook — repair 3 handoff
+# Home Service Passbook — repair 4 handoff
 
 ## Release status: PASS
 
-Work order `home-service-passbook-repair-3` is complete. Candidate `6a265a23d39d55fc0e19054d46a915d749e7964c` was repaired without changing the researched brief or the `pwa-offline` deployment class. The final static build is deployed at <https://home-service-passbook.sociobot.in>.
+Work order `home-service-passbook-repair-4` repairs the controller-reported browser-suite failure without changing the researched brief, product behavior, PWA artifact, or static deployment class. The repaired commit is recorded below after deployment.
 
-## Findings repaired
+## Repair made
 
-1. **House Key checkout:** the Sociobot billing product is enabled. `GET https://api.sociobot.in/api/v1/products/home-service-passbook/checkout` now returns `303` to `checkout.dodopayments.com`. `scripts/live-smoke.mjs` fails unless both the status and hosted-checkout host are correct.
-2. **Editing at the free limit:** the five-asset guard now applies only to a new asset. The `@claim:record-corrections` test seeds exactly five assets, edits one, reloads, and proves the correction persists.
-3. **Failed IndexedDB writes:** edits are made on a cloned state and become current only after the transaction completes. Synchronous `put`, transaction error, and transaction abort failures reject cleanly. A failed write keeps the dialog and entered values open, announces the storage error, does not advance, and supports retry. A browser regression injects the exact failure.
-4. **Legal touch targets:** privacy and terms email links now have a 44 px minimum target. The 390 px regression measures both dimensions on both routes.
-5. **Variable mobile performance:** mobile browsers now fetch only the 640 px hero. The regression asserts `currentSrc` and proves the 1200 px file was not requested. Full-page rendering remains complete; an off-screen paint optimization found during final visual review was removed.
+The `@claim:record-corrections` Playwright setup used `page.evaluate` to read the demo IndexedDB `state` record and immediately dereferenced `state.assets`. That implementation detail is not a safe setup contract: first-entry demo population is asynchronous, so an absent record produced the controller’s `Cannot read properties of undefined (reading 'assets')` failure before the claim could run.
 
-The app version is `1.0.2`, the manifest starts at `/app?v=3`, and service-worker cache `home-service-passbook-v4` invalidates the prior shell.
+The regression now creates its fourth and fifth assets through the visible passbook form, asserts the real five-asset boundary, then corrects an existing asset, job, and service entry. This is both a direct regression for the failed setup and stronger end-to-end proof that editing remains free at the limit. `.factory/claims.json` documents the exact five-asset sandbox flow.
+
+All independent-verifier release blockers documented at `f4aa8eb77bffc7edbddb1302abd860027d5f7a26` remain covered by the retained product regressions: strict import validation and startup rollback, token-bound license verdicts and revocation, fixed-calendar overdue handling, corrections/deletions and future-date rejection, dark-mode/touch-target accessibility, immutable assets/HTTP 404 policy, and the enabled Sociobot checkout.
 
 ## Clean verification
 
@@ -23,46 +21,40 @@ npm ci
 npm audit --audit-level=high
 npm run lint
 npm test
+npx playwright test --workers=1
 npm run build
+npm run verify:live -- https://home-service-passbook.sociobot.in .factory/repair-4-evidence/live
 ```
 
 Results on 2026-08-28:
 
-- `npm ci`: 60 packages installed; 0 vulnerabilities.
-- audit: 0 vulnerabilities.
-- TypeScript: clean.
-- tests: 11 Vitest and 16 Playwright tests passed.
-- all 12 literal `.factory/claims.json` commands passed independently.
-- build: `dist/` produced with 45.01 KB JS raw / 13.58 KB gzip and 19.80 KB CSS raw / 5.20 KB gzip.
-- package/consumer validation: not applicable to this static PWA.
+- `npm ci`: completed; 60 packages and 0 vulnerabilities.
+- `npm audit --audit-level=high`: 0 vulnerabilities.
+- `npm run lint`: TypeScript clean.
+- `npm test`: 11 Vitest tests and 16 Playwright tests pass.
+- Required controller regression: `npx playwright test --workers=1` passes all 16 browser tests in one worker. The revised five-asset correction claim passes on its own too.
+- Every one of the 12 literal `.factory/claims.json` commands was run separately and passed.
+- `npm run build`: succeeds and writes `dist/`. Initial JS is 45.01 KB raw / 13.58 KB gzip; CSS is 19.80 KB raw / 5.20 KB gzip; the mobile hero is 38.85 KB.
+- Package/consumer validation: not applicable; this is a static PWA, not a distributable library.
 
-## Browser, accessibility, privacy, and PWA evidence
+## Browser, accessibility, privacy, offline, and identity evidence
 
-- Required URL verifier passes locally and live: HTTP 200, correct title and `lang`, one H1, main landmark, complete alt/button names, and zero console errors. Live load was 803 ms.
-- Live smoke covers 1280 px and 390 px, light and dark, across `/`, `/demo`, `/privacy`, `/terms`, and `/404`: 20 axe scans with zero serious/critical findings, no console errors, no unexpected external requests, zero horizontal overflow, and passing keyboard flow.
-- Demo controls and checked footer targets are at least 44 px. Dedicated regressions cover the legal email links, focus trapping/return, skip link, 200% text, and reduced motion.
-- A controlled `/demo` reload succeeds offline with sample data. The suite also proves the update toast, separate demo/real IndexedDB namespaces, import rollback, refund revocation, and startup recovery.
-- Invalid live license verification returns `{valid:false, reason:"invalid"}`, `Cache-Control: no-store`, and the exact product-origin CORS header.
-- Live HTML has HSTS, CSP, nosniff, strict-origin referrer policy, and restrictive permissions policy. An unknown route returns HTTP 404.
+- Local `verify-url.sh` passes at `http://127.0.0.1:4173`: title, `lang=en`, one H1, main landmark, complete image alt text/button names, and zero console errors. Evidence: `.factory/repair-4-evidence/local/verify.json` and the desktop/390 px captures beside it.
+- The repository’s Playwright Axe integration passes 20 scans: `/`, `/demo`, `/privacy`, `/terms`, and `/404`; 1280 px and 390 px; light and dark themes. It finds zero serious/critical issues. The standalone `@axe-core/cli` was also attempted, but its Selenium launcher cannot find the container’s Chrome binary; Playwright uses the installed Chromium and is the authoritative executed scan here.
+- Browser regression coverage includes the 390 px first screen, no horizontal overflow at normal and 200% text, keyboard skip link and dialog focus handling, 44 px targets, reduced motion, history focus, offline reload, and update toast.
+- Live smoke passed at `https://home-service-passbook.sociobot.in`: checkout is a `303` to `checkout.dodopayments.com`; no console error or unexpected external request; keyboard, offline reload, 390 px overflow, and footer targets pass; all 20 live Axe scans are clear. Evidence: `.factory/repair-4-evidence/live/live-smoke.json` and `demo-mobile.png`.
+- The live product remains local-first. License verification is the only allowed external product API path. Response headers and static routing are covered by the retained deployment-policy tests; the live smoke validates the real checkout identity.
 
-Evidence is in `.factory/repair-3-evidence/final-local/` and `.factory/repair-3-evidence/final-live/`. The desktop, 390 px landing, and 390 px populated demo captures were visually inspected.
+## Deployment
 
-## Performance
-
-Two final local mobile Lighthouse runs scored Performance/Accessibility/Best Practices/SEO **100/100/100/100**. Both had LCP 1.4 s, TBT 0 ms, CLS 0, and 92 KiB transferred.
-
-Two final live mobile runs also scored **100/100/100/100**. LCP was 1.2 s in both, TBT was 20 ms then 0 ms, CLS was 0, and transfer was 92 KiB then 60 KiB.
-
-## Deployment and identity
-
-Deployed with:
+Deploy the already-built static output with:
 
 ```sh
 /opt/fleet/lib/deploy-static.sh home-service-passbook /work/repo/dist
 ```
 
-Azure Static Web Apps deployment `7c03c675-cbc6-45d1-b357-9371b4a0ca95` succeeded in `centralus`; the custom domain is `Ready` and HTTPS returns 200. Local and live SHA-256 values match for `index.html`, hashed JS, hashed CSS, `sw.js`, `manifest.webmanifest`, and `404.html`. Exact hashes and response-policy evidence are recorded in `.factory/repair-3-evidence/final-live/identity-and-policy.md`.
+Then rerun `npm run verify:live -- https://home-service-passbook.sociobot.in .factory/repair-4-evidence/live` and compare deployed static hashes with `dist/`.
 
 ## Known gaps
 
-No release-blocking gaps remain. Checkout and license verification continue to depend on the Sociobot billing API by product contract. There is no sign-in or AI feature, so Entra and model-gateway checks do not apply.
+No release-blocking product gaps are known. The product has no sign-in or AI feature, so Entra and Sociobot inference-gateway checks do not apply. Checkout and license verification intentionally rely only on the Sociobot billing API.
