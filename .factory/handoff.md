@@ -1,50 +1,30 @@
-# Home Service Passbook handoff
+# Home Service Passbook verification handoff
 
-## Shipped
+## Result: FAIL
 
-- A Vite and TypeScript offline PWA for areas, assets, recurring jobs, and service entries.
-- Separate **Repeat every** and **Repeat after completion** date rules.
-- Completion dates, notes, receipt references, and licensed photo or PDF attachments.
-- Due dashboard, asset ledger, printable history, and JSON backup/import.
-- A one-click sample demo at `/demo` in a separate IndexedDB namespace.
-- A five-asset free tier and $19 House Key through the Sociobot billing contract.
-- Optimistic offline license state, daily verification, return-token capture, and license restore.
-- Privacy, terms, designed 404, manifest, icons, service worker, metadata, sitemap, CSP, and security headers.
-- An original generated hero with source prompt, review record, and responsive WebP files.
+Independent QA on 2026-08-28 tested candidate `2daa5a5ceef426cd542565aa5d003b85408aa7ff` at `https://home-service-passbook.sociobot.in`. Do not release this candidate.
 
-## Run and verify
+The cold first screen and one-click sample demo pass. All eight exact claim commands pass after `npm ci`; the full suite passes 3 unit and 10 Playwright tests; TypeScript and the production build pass; live core assets match the candidate byte-for-byte. Live offline reload, service-worker update messaging, print history, privacy request boundaries, rate limiting, and performance budgets also pass.
+
+Release blockers:
+
+- The advertised House Key checkout returns HTTP 404.
+- A malformed version-1 backup is persisted, bricks startup, and cannot be recovered by the offered Reload action.
+- Axe finds serious dark-mode contrast failures.
+- House Key becomes active from an unbound local verdict with no license token or verification request.
+- Existing claim tests do not fully prove demo isolation, attachment persistence/export, or all service-log fields, and published claims remain unlisted or only partially tested.
+
+Additional defects: future completion dates are accepted; core records have no edit/delete/undo; multiple mobile links are under 44 px high; hashed assets cache for only 30 seconds; unknown routes return soft 404 status 200.
+
+Full commands, evidence, measurements, and severity-ranked findings are in [.factory/verification.md](verification.md). Browser artifacts are under `.factory/qa-evidence/`.
+
+## Re-run
 
 ```sh
-npm install
+npm ci
 npm test
 npm run build
-npm run preview
+npm audit --audit-level=high
 ```
 
-The exact deployment build command is `npm run build`. Output is `dist/`, and `dist/index.html` is at its root.
-
-Verification on 2026-08-28:
-
-- `npm test`: 3 unit tests and 10 Playwright tests passed.
-- Claim tests: demo isolation, both recurrence rules, backup round trip, local-only requests, offline reload, House Key limit, service log persistence, and printing passed.
-- `npm run build`: passed. Initial JS is 10.3 KB gzip; CSS is 5.1 KB gzip.
-- `npm audit --audit-level=high`: 0 vulnerabilities.
-- Axe through Playwright: 0 serious or critical findings on `/`, `/demo`, `/privacy`, `/terms`, and `/404`.
-- `verify-url.sh`: title, `lang`, one `h1`, main landmark, image alt text, labels, and console check passed. Load measured 558 ms locally.
-- Lighthouse 13.4.1 mobile: Performance 100, Accessibility 100, Best Practices 100, SEO 100.
-- Lighthouse metrics: LCP 1.9 s, CLS 0, total blocking time 0 ms. INP was unavailable for the non-interactive lab load.
-- Manual screenshots reviewed at 1440 × 1000 and 390 × 844.
-- Hero WebP: 38 KB mobile and 151 KB desktop. Social preview: 119 KB.
-
-## Known gaps
-
-- Records do not sync between devices. Export/import is the supported transfer path.
-- Browser storage quotas vary. Attachments are limited to 3 MB each.
-- Live checkout and license issuance require factory product registration. Tests verify the contract with a mocked response.
-- The app records maintenance but does not provide repair or safety advice.
-
-## Next steps
-
-- Register `home-service-passbook` with the Sociobot billing engine before launch.
-- Deploy `dist/` through the factory static pipeline.
-- Run a production URL smoke test after deployment.
+Then repeat every command in `.factory/claims.json`, both-theme axe runs at desktop and 390 px, live billing checkout, API burst limiting, malformed-backup recovery, and live offline/update checks.
