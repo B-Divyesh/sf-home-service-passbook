@@ -18,7 +18,7 @@ All 15 findings in `.factory/review-1.md` are resolved. There were no earlier re
 ## Exact verification
 
 - Implementation commit: `77bd367` (`fix: resolve adversarial review findings`).
-- Clean clone: `/tmp/hsp-polish-1-clean-CRLmlZ`; `npm ci` passed with zero vulnerabilities.
+- Final clean clone: `/tmp/hsp-polish-1-final-zdli8t`; `npm ci` passed with zero vulnerabilities.
 - Every one of the 14 literal claim commands passed separately.
 - Full clean-clone `npm test`: 17 Vitest tests and 19 Playwright tests passed.
 - `npm run build`: passed and produced `dist/index.html`; initial bundle is 47.54 KB JS / 14.38 KB gzip and 19.93 KB CSS / 5.22 KB gzip.

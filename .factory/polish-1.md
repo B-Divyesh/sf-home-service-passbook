@@ -24,7 +24,7 @@ Release candidate `cfd6e2e5d81329123427b675ec7c9ca34373d3f1` was repaired agains
 
 ## Cumulative regression evidence
 
-- All 14 literal `.factory/claims.json` commands passed separately after `npm ci` in clean clone `/tmp/hsp-polish-1-clean-CRLmlZ`.
+- All 14 literal `.factory/claims.json` commands passed separately after `npm ci` in final clean clone `/tmp/hsp-polish-1-final-zdli8t`.
 - The clean clone then passed 17 Vitest tests, 19 Playwright tests, and `npm run build`. The release bundle is 47.54 KB JS and 19.93 KB CSS raw.
 - `live-check.json` proves a visible first-screen action at 390 × 844, demo reset, separate real/demo records, offline reload, zero cross-origin demo requests, all route metadata, focus after navigation/back, a true HTTP 404, and 20 axe scans with zero serious/critical issues.
 - `live-smoke/live-smoke.json` separately proves 44 px demo/legal targets, keyboard skip navigation, no horizontal overflow, offline reload, no console errors, no external demo requests, hosted checkout redirect, and 20 more clean axe scans.
