@@ -167,6 +167,10 @@ test('@claim:house-key-limit free limit and licensed features are enforced', asy
   for await (const chunk of stream) chunks.push(Buffer.from(chunk));
   const exported = JSON.parse(Buffer.concat(chunks).toString());
   expect(exported.completions.some((entry: { attachment?: { name: string; dataUrl: string } }) => entry.attachment?.name === 'proof.png' && entry.attachment.dataUrl.startsWith('data:image/png;base64,'))).toBe(true);
+  await page.route('https://api.sociobot.in/api/v1/products/home-service-passbook/verify?license=return-token', (route) => route.fulfill({ json: { valid: true, reason: 'ok', expires_at: null } }));
+  await page.goto('/app?panel=license&license=return-token');
+  await expect(page).toHaveURL('/app?panel=license');
+  await expect(page.getByRole('heading', { name: 'House Key is active' })).toBeVisible();
 });
 
 test('light and dark routes have no serious accessibility violations on desktop or mobile', async ({ page }) => {

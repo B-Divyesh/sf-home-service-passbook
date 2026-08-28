@@ -593,7 +593,8 @@ async function recheckLicense(): Promise<void> {
     if (!response.ok) return;
     const verdict = await response.json() as { valid: boolean };
     localStorage.setItem(VERDICT_KEY, JSON.stringify({ valid: verdict.valid, checkedAt: Date.now(), token } satisfies CachedVerdict));
-    if (!verdict.valid && activePanel === 'license') await render();
+    if (['/app', '/demo', '/history', '/backup'].includes(location.pathname)) await render();
+    if (verdict.valid) showToast('House Key is active on this browser.');
   } catch { /* Keep the cached state while offline. */ }
 }
 
