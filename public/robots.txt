@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://home-service-passbook.sociobot.in/sitemap.xml

@@ -1,0 +1,16 @@
+{
+  "name": "Home Service Passbook",
+  "short_name": "Passbook",
+  "description": "Track recurring home care and keep service proof.",
+  "id": "/",
+  "start_url": "/app?v=1",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f3ebd8",
+  "theme_color": "#28312e",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
