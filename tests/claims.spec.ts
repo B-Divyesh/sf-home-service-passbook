@@ -28,8 +28,8 @@ test('@claim:demo-sandbox demo is filled and isolated from real data', async ({ 
   await expect(page.getByLabel('Example maintenance status')).toContainText('04 service entries');
   await sampleAction.click();
   await expect(page).toHaveURL('/?demo=1');
-  await expect(page.getByText('Demo — sample data, nothing is saved to your passbook.')).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Replace air filter' })).toBeVisible();
+  await expect(page.getByText('Demo — sample data. Nothing saves to your passbook.')).toBeVisible();
+  await expect(page.locator('[data-demo-sample-record]')).toContainText('Replace air filter');
   await page.getByRole('button', { name: 'Reset demo' }).click();
   await page.getByRole('button', { name: 'Start for real' }).click();
   await page.getByRole('button', { name: 'Assets' }).click();
@@ -53,7 +53,7 @@ test('@claim:recurrence-rules fixed and completion-relative schedules differ wit
   await expect(fixed).toContainText('Aug 1, 2026');
 
   await page.goto('/?demo=1');
-  const completionRelative = page.getByRole('article').filter({ hasText: 'Replace air filter' });
+  const completionRelative = page.locator('[data-task-row]').filter({ hasText: 'Replace air filter' });
   await expect(completionRelative).toContainText('Repeat after completion');
 });
 
@@ -125,7 +125,7 @@ test('@claim:offline-reload app reloads offline after first visit', async ({ pag
   await context.setOffline(true);
   await page.reload();
   await expect(page.getByRole('heading', { name: 'What needs care next' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Replace air filter' })).toBeVisible();
+  await expect(page.locator('[data-task-row]').filter({ hasText: 'Replace air filter' })).toBeVisible();
 });
 
 test('@claim:house-key-limit free limit and licensed features are enforced', async ({ page }) => {
@@ -240,6 +240,14 @@ test('mobile first screen and keyboard path work', async ({ page }) => {
     expect(box?.height, `${path} email height`).toBeGreaterThanOrEqual(44);
   }
   await page.goto('/?demo=1');
+  const sampleRecord = page.locator('[data-demo-sample-record]');
+  await expect(sampleRecord).toContainText('Replace air filter');
+  await expect(sampleRecord).toContainText('Furnace · Utility room');
+  await expect(sampleRecord).toContainText('Aug 14, 2026');
+  await expect(sampleRecord).toContainText('Pack 2 of 4');
+  const sampleRecordBox = await sampleRecord.boundingBox();
+  expect(sampleRecordBox?.y, 'sample record begins in the initial viewport').toBeGreaterThanOrEqual(0);
+  expect((sampleRecordBox?.y ?? 0) + (sampleRecordBox?.height ?? 0), 'complete sample record stays in the initial viewport').toBeLessThanOrEqual(844);
   for (const name of ['Reset demo', 'Start for real']) {
     const box = await page.getByRole('button', { name }).boundingBox();
     expect(box?.height).toBeGreaterThanOrEqual(44);

@@ -1,6 +1,6 @@
 # Copy audit
 
-Audited 2026-08-28 after the third polish repair. This table includes every static visitor-facing line on the landing route, including navigation, image alternative, labels, sample values, actions, and footer. Counts treat prices, dates, hyphenated terms, and version strings as one word. No sentence exceeds 22 words. No banned marketing word appears.
+Audited 2026-08-28 after the fourth polish repair. This table includes every static visitor-facing line on the landing route, including navigation, image alternative, labels, sample values, actions, and footer. Counts treat prices, dates, hyphenated terms, and version strings as one word. No sentence exceeds 22 words. No banned marketing word appears.
 
 ## Landing route
 
@@ -93,3 +93,7 @@ The README uses the same document, history, entry, and House Key terms as the pr
 | Calendar reminder download | calendar file |
 
 The hero says **passbook**, not a competing document name. Its third instrument value is the observable sample count: **04 service entries**. The app eyebrow is **Passbook**. Both 404 shells use **Page not found**. The hero keeps the useful **Service record** label and no decorative identifier.
+
+## Demo first screen
+
+At 390 × 844, the demo opens directly to a named sample record before secondary controls. Its static labels are **Demo**, **Sample record**, **Due**, and **Last proof**. The seeded values show the job, its asset and area, its date, and its receipt reference. The browser check `mobile first screen and keyboard path work` proves the full sample record stays in the initial viewport.

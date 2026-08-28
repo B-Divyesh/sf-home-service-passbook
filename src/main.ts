@@ -36,7 +36,7 @@ const escapeHtml = (value: string) => value.replace(/[&<>'"]/g, (char) => ({ '&'
 
 function shell(content: string): string {
   return `
-    <div class="site-frame">
+    <div class="site-frame${isDemo() ? ' is-demo' : ''}">
       <header class="site-header">
         <a class="wordmark" href="/" data-link aria-label="Home Service Passbook home">
           <span class="wordmark-mark" aria-hidden="true"><i></i></span>
@@ -63,7 +63,7 @@ function shell(content: string): string {
 
 function demoBanner(): string {
   return `<aside class="demo-banner" aria-label="Demo mode">
-    <span><strong>Demo</strong> — sample data, nothing is saved to your passbook.</span>
+    <span><strong>Demo</strong> — sample data. Nothing saves to your passbook.</span>
     <span class="demo-actions"><button class="text-button" data-action="reset-demo">Reset demo</button><button class="text-button" data-action="leave-demo">Start for real</button></span>
   </aside>`;
 }
@@ -128,14 +128,14 @@ function appPage(): string {
   const dueTasks = [...state.tasks].sort((a, b) => nextDue(a, state.completions).localeCompare(nextDue(b, state.completions)));
   const overdueCount = dueTasks.filter((task) => dueState(nextDue(task, state.completions)) === 'overdue').length;
   return shell(`
-    <section class="app-head">
+    <section class="app-head${isDemo() ? ' demo-app-head' : ''}">
       <div><p class="eyebrow">Passbook</p><h1 tabindex="-1">${activePanel === 'due' ? 'What needs care next' : panelTitle()}</h1></div>
       <div class="counter-panel" aria-label="Passbook summary"><span><b>${String(state.assets.length).padStart(2, '0')}</b> assets</span><span><b>${String(overdueCount).padStart(2, '0')}</b> overdue</span><i aria-hidden="true" class="gauge ${overdueCount ? 'gauge-alert' : ''}"></i></div>
     </section>
     <nav class="app-tabs" aria-label="Passbook sections">
       ${tabButton('due', 'Due next')}${tabButton('assets', 'Assets')}${tabButton('history', 'History')}${tabButton('backup', 'Backup')}${tabButton('license', 'House Key')}
     </nav>
-    <section class="app-panel">${panelContent(dueTasks)}</section>
+    <section class="app-panel${activePanel === 'due' ? ' due-panel' : ''}">${panelContent(dueTasks)}</section>
     ${dialogs()}`);
 }
 
@@ -153,8 +153,26 @@ function panelContent(dueTasks: Task[]): string {
   if (activePanel === 'backup') return backupPanel();
   if (activePanel === 'license') return licensePanel();
   if (!dueTasks.length) return emptyBlock('No scheduled jobs yet', 'Add an asset, then add its first recurring job.', '<button class="button primary" data-open="asset-dialog">Add an asset</button>');
-  return `<div class="panel-toolbar"><div><p class="panel-kicker">Ordered by due date</p><p>${dueTasks.length} recurring ${dueTasks.length === 1 ? 'job' : 'jobs'}</p></div><div class="toolbar-actions"><button class="button secondary" data-action="calendar">Export calendar (.ics)</button><button class="button primary" data-open="completion-dialog" ${dueTasks.length ? '' : 'disabled'}>Record completed work</button></div></div>
-    <div class="task-list">${dueTasks.map(taskRow).join('')}</div>`;
+  return `<div class="due-content">
+    <div class="panel-toolbar"><div><p class="panel-kicker">Ordered by due date</p><p>${dueTasks.length} recurring ${dueTasks.length === 1 ? 'job' : 'jobs'}</p></div><div class="toolbar-actions"><button class="button secondary" data-action="calendar">Export calendar (.ics)</button><button class="button primary" data-open="completion-dialog" ${dueTasks.length ? '' : 'disabled'}>Record completed work</button></div></div>
+    ${isDemo() ? demoFirstRecord(dueTasks[0]) : ''}
+    <div class="task-list">${dueTasks.map(taskRow).join('')}</div>
+  </div>`;
+}
+
+function demoFirstRecord(task: Task | undefined): string {
+  if (!task) return '';
+  const asset = state.assets.find((item) => item.id === task.assetId);
+  const area = state.areas.find((item) => item.id === asset?.areaId);
+  const due = nextDue(task, state.completions);
+  const last = state.completions.filter((item) => item.taskId === task.id).sort((a, b) => b.completedOn.localeCompare(a.completedOn))[0];
+  const proof = last?.receiptRef || last?.note || 'No proof added';
+  return `<article class="demo-first-record" data-demo-sample-record>
+    <div class="demo-record-heading"><p class="eyebrow">Sample record</p><span class="status ${dueState(due)}">${dueState(due) === 'overdue' ? 'Overdue' : dueState(due) === 'soon' ? 'Due soon' : 'Scheduled'}</span></div>
+    <h2>${escapeHtml(task.name)}</h2>
+    <p>${escapeHtml(asset?.name ?? 'Unknown asset')} · ${escapeHtml(area?.name ?? 'No area')}</p>
+    <dl><div><dt>Due</dt><dd>${formatDate(due)}</dd></div><div><dt>Last proof</dt><dd>${escapeHtml(proof)}</dd></div></dl>
+  </article>`;
 }
 
 function taskRow(task: Task): string {
