@@ -1,0 +1,179 @@
+{
+  "tabStops": [
+    {
+      "tag": "A",
+      "name": "Skip to main content",
+      "outline": "3px solid rgb(23, 109, 104)",
+      "rect": {
+        "x": 16,
+        "y": 12,
+        "width": 176.96875,
+        "height": 48.796875,
+        "top": 12,
+        "right": 192.96875,
+        "bottom": 60.796875,
+        "left": 16
+      }
+    },
+    {
+      "tag": "A",
+      "name": "HOME SERVICE PASSBOOK",
+      "outline": "3px solid rgb(23, 109, 104)",
+      "rect": {
+        "x": 17,
+        "y": 10,
+        "width": 140.671875,
+        "height": 44,
+        "top": 10,
+        "right": 157.671875,
+        "bottom": 54,
+        "left": 17
+      }
+    },
+    {
+      "tag": "A",
+      "name": "Passbook",
+      "outline": "3px solid rgb(23, 109, 104)",
+      "rect": {
+        "x": 17,
+        "y": 54,
+        "width": 77.9375,
+        "height": 44,
+        "top": 54,
+        "right": 94.9375,
+        "bottom": 98,
+        "left": 17
+      }
+    },
+    {
+      "tag": "A",
+      "name": "Privacy",
+      "outline": "3px solid rgb(23, 109, 104)",
+      "rect": {
+        "x": 310.34375,
+        "y": 54,
+        "width": 62.65625,
+        "height": 44,
+        "top": 54,
+        "right": 373,
+        "bottom": 98,
+        "left": 310.34375
+      }
+    },
+    {
+      "tag": "A",
+      "name": "Try it with sample data",
+      "outline": "3px solid rgb(23, 109, 104)",
+      "rect": {
+        "x": 21,
+        "y": 494.625,
+        "width": 348,
+        "height": 50.796875,
+        "top": 494.625,
+        "right": 369,
+        "bottom": 545.421875,
+        "left": 21
+      }
+    },
+    {
+      "tag": "A",
+      "name": "Start my passbook",
+      "outline": "3px solid rgb(23, 109, 104)",
+      "rect": {
+        "x": 21,
+        "y": 557.421875,
+        "width": 348,
+        "height": 50.796875,
+        "top": 557.421875,
+        "right": 369,
+        "bottom": 608.21875,
+        "left": 21
+      }
+    },
+    {
+      "tag": "A",
+      "name": "Buy House Key — $19",
+      "outline": "3px solid rgb(23, 109, 104)",
+      "rect": {
+        "x": 55,
+        "y": 3460.109375,
+        "width": 208.953125,
+        "height": 50.796875,
+        "top": 3460.109375,
+        "right": 263.953125,
+        "bottom": 3510.90625,
+        "left": 55
+      }
+    },
+    {
+      "tag": "A",
+      "name": "Restore a license",
+      "outline": "3px solid rgb(23, 109, 104)",
+      "rect": {
+        "x": 55,
+        "y": 3528.90625,
+        "width": 123.625,
+        "height": 44,
+        "top": 3528.90625,
+        "right": 178.625,
+        "bottom": 3572.90625,
+        "left": 55
+      }
+    },
+    {
+      "tag": "A",
+      "name": "Privacy",
+      "outline": "3px solid rgb(23, 109, 104)",
+      "rect": {
+        "x": 21,
+        "y": 3889.71875,
+        "width": 45.078125,
+        "height": 44,
+        "top": 3889.71875,
+        "right": 66.078125,
+        "bottom": 3933.71875,
+        "left": 21
+      }
+    },
+    {
+      "tag": "A",
+      "name": "Terms",
+      "outline": "3px solid rgb(23, 109, 104)",
+      "rect": {
+        "x": 90.078125,
+        "y": 3889.71875,
+        "width": 37.4375,
+        "height": 44,
+        "top": 3889.71875,
+        "right": 127.515625,
+        "bottom": 3933.71875,
+        "left": 90.078125
+      }
+    }
+  ],
+  "smallTargets": [
+    {
+      "name": "Terms",
+      "width": 37.4375,
+      "height": 44
+    }
+  ],
+  "dialog": {
+    "trapped": false,
+    "returned": true
+  },
+  "zoom": {
+    "overflow": 0,
+    "h1Visible": true,
+    "demoActionsVisible": true
+  },
+  "history": {
+    "path": "/demo?panel=due",
+    "focus": true
+  },
+  "motion": {
+    "scroll": "auto",
+    "transition": "1e-05s",
+    "animations": 0
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "before": {
+    "controller": "https://home-service-passbook.sociobot.in/sw.js",
+    "activeState": "activated",
+    "caches": [
+      "home-service-passbook-v3"
+    ]
+  },
+  "after": {
+    "activeState": "activated",
+    "waiting": false,
+    "installing": false
+  },
+  "manifest": {
+    "start_url": "/app?v=2",
+    "display": "standalone",
+    "theme_color": "#28312e",
+    "background_color": "#f3ebd8"
+  },
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "declared": "192x192",
+      "actual": "192x192",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "declared": "512x512",
+      "actual": "512x512",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable-512.png",
+      "declared": "512x512",
+      "actual": "512x512",
+      "purpose": "maskable"
+    }
+  ]
+}

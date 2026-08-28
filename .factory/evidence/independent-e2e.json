@@ -1,0 +1,136 @@
+{
+  "checks": [
+    {
+      "name": "mobile first-screen job statement",
+      "pass": true,
+      "detail": "{\"x\":21,\"y\":188.828125,\"width\":334.578125,\"height\":164.25}"
+    },
+    {
+      "name": "mobile one-click sample action",
+      "pass": true,
+      "detail": "{\"x\":21,\"y\":494.625,\"width\":348,\"height\":50.796875}"
+    },
+    {
+      "name": "demo route opened",
+      "pass": true,
+      "detail": "https://home-service-passbook.sociobot.in/demo"
+    },
+    {
+      "name": "demo isolation banner",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "sample is immediately useful",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "real passbook starts empty",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "empty required area focuses first error",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "zero interval rejected and focused",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "completion-relative schedule created",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "future completion rejected",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "future date field focused",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "service fields visible",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "service survives refresh",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "asset correction persists",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "service correction persists",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "cancelled delete preserves entry",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "confirmed delete removes entry",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "sixth asset reaches paywall",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "core backup remains free",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "malformed nested backup rejected",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "valid state survives bad import",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "390px no horizontal overflow",
+      "pass": true,
+      "detail": "0"
+    },
+    {
+      "name": "no console errors",
+      "pass": true,
+      "detail": "[]"
+    },
+    {
+      "name": "no page errors",
+      "pass": true,
+      "detail": "[]"
+    },
+    {
+      "name": "no unexpected outbound requests",
+      "pass": true,
+      "detail": "[]"
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "externalRequests": [],
+  "summary": {
+    "passed": 25,
+    "total": 25
+  }
+}
