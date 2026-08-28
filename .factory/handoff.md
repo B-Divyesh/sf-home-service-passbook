@@ -1,40 +1,30 @@
-# Home Service Passbook — polish 3 handoff
+# Home Service Passbook — review 4 handoff
 
-## Status: PASS
+## Status: FAIL
 
-Release repair commit: `7aafe2a4cf9b71a36cb27b325871e04f685a407c` (`fix: close review three copy findings`). It is pushed to `origin/main` and deployed to <https://home-service-passbook.sociobot.in> through Azure Static Web Apps deployment `9144ecea-677a-4771-8c03-b99dbaf83128`.
+Adversarial review 4 found one blocking demo-presentation defect. Product code was not modified.
 
-## What changed
+## What was done
 
-- Replaced the remaining landing-page `log` wording with “Private home maintenance passbook.”
-- Replaced the empty `log ready` readout with the real sample value “04 service entries.” The value remains visible at 390 px.
-- Rewrote README photo and import recovery copy in household language.
-- Updated the two import claims and made the import-validation claim test reject bad area, asset, job, service-entry, and attachment records before confirmation.
-- Preserved the isolated `?demo=1` flow, banner, reset, Start for real path, real routes, legal links, static 404, and the mid-century instrument-panel visual system.
-- Bumped the PWA cache/manifest version to v6 and the product footer/package version to v1.0.4 so installed clients receive the repair.
-- Updated the catalog line: “Keep home service work, due dates, and proof in a private browser passbook.”
+- Reviewed the deployed site cold at 390 × 844 and 1440 × 900.
+- Audited every landing-page and README sentence in `.factory/review-4.md`.
+- Exercised demo entry, a demo-only service entry, Reset, offline reload, request isolation, and separation from a real browser record.
+- Ran every literal `.factory/claims.json` command independently in clean clone `/tmp/hsp-review4-clean-qWoqU6`.
+- Rechecked all 22 findings from reviews 1–3 in the live site and source.
+- Checked route metadata, deep links, Back/focus behavior, link status, the HTTP 404, visual identity, accessibility, and missed leverage.
 
 ## Verification
 
-- Clean clone: `/tmp/hsp-polish-3-clean-riEgZB` checked out `7aafe2a`, ran `npm ci`, then every literal command in `.factory/claims.json` independently. All 14 claim commands passed: `demo-sandbox`, `recurrence-rules`, `json-backup`, `local-only`, `offline-reload`, `house-key-limit`, `service-log`, `print-history`, `calendar-export`, `scope-boundaries`, `record-corrections`, `import-validation`, `import-rollback`, and `refund-revocation`.
-- The same clean clone passed `npm test` (18 Vitest/static tests and 19 Playwright browser tests) and `npm run build`; `dist/index.html` was rebuilt at 2026-08-28 22:57:17 UTC.
-- Local production verification: [verify-url](polish-3-evidence/local-verify/verify.json) reports 541 ms load, zero console errors, title/lang/main, one h1, and no missing image alt text or unnamed buttons. [Local live smoke](polish-3-evidence/local-live/live-smoke.json) reports offline reload, keyboard skip navigation, zero external demo requests, zero overflow, 44 px checked targets, hosted checkout redirect, and 20 clean Axe scans.
-- Local Lighthouse retry: [100/100/100/100](polish-3-evidence/local-lighthouse-retry.json), LCP 1.51 s, TBT 0 ms, CLS 0.
-- Live cold verification: [verify-url](polish-3-evidence/live-verify/verify.json) reports 852 ms load and zero console errors. The post-propagation [live smoke retry](polish-3-evidence/live-smoke-retry/live-smoke.json) reports zero console/external-request errors, offline demo reload, keyboard skip navigation, zero overflow, 44 px checked targets, a hosted checkout 303, and 20 zero-serious/critical Axe scans.
-- Live product review: [first-screen results](polish-3-evidence/live-first-read.json), [direct demo reset](polish-3-evidence/live-demo-reset.json), [real/demo isolation](polish-3-evidence/live-demo-real-isolation.json), [route/focus/404 review](polish-3-evidence/live-routes-final.json), and [headers/link review](polish-3-evidence/live-policy-and-links.json) all pass. Screenshots are [landing desktop](polish-3-evidence/screenshots/live-landing-desktop.png), [landing mobile](polish-3-evidence/screenshots/live-landing-mobile.png), [demo mobile](polish-3-evidence/screenshots/live-demo-mobile.png), and [404 mobile](polish-3-evidence/screenshots/live-404-mobile.png).
-- Live Lighthouse: [100/100/100/100](polish-3-evidence/live-lighthouse.json), LCP 1.26 s, TBT 0 ms, CLS 0.
+- 14/14 declared claim commands passed in the clean clone.
+- `npm test`: 18 Vitest tests and 19 Playwright tests passed.
+- `npm run build`: passed; `dist/` was produced; JavaScript is 14.33 KB gzip.
+- `npm run verify:live`: offline reload and keyboard checks passed; no external demo requests, console errors, overflow, or serious/critical Axe findings across 20 scans.
+- `/opt/fleet/lib/verify-url.sh https://home-service-passbook.sociobot.in .factory/review-4-evidence/verify`: passed.
+- Route crawl: all internal links returned 200; Sociobot checkout returned 303; the missing route returned 404 with the designed shell.
 
-## Run it
+## Remaining work
 
-```sh
-npm ci
-npm test
-npm run build
-npm run preview
-```
+- `F-4-1` (blocking): at 390 × 844, the initial demo task row starts at y=830 and its specific sample content is below the viewport. Make a complete named sample record readable without scrolling and add a viewport-bound assertion.
+- Align “The demo opens a filled service history” with the panel that actually opens.
 
-Open `/?demo=1` for the isolated sample passbook. Use Reset demo to discard sample changes and Start for real to return to the separate household passbook.
-
-## Known gaps
-
-None. The product remains local-first: records stay in browser storage unless the user exports a backup; no analytics, remote fonts, or third-party scripts are loaded.
+See `.factory/review-4.md` and `.factory/review-4-evidence/demo-first-mobile.png`.
