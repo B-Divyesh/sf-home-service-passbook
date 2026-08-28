@@ -454,7 +454,7 @@ test('@claim:record-corrections future work is rejected and existing records can
   await filter.getByRole('button', { name: 'Edit job' }).click();
   await page.getByLabel('Job name').fill('Replace HVAC filter');
   await page.getByRole('button', { name: 'Save changes' }).click();
-  await expect(page.getByRole('heading', { name: 'Replace HVAC filter' })).toBeVisible();
+  await expect(page.locator('[data-task-row]').filter({ hasText: 'Replace HVAC filter' })).toBeVisible();
 
   await page.getByRole('button', { name: 'History' }).click();
   const entry = page.locator('[data-history-row]').filter({ hasText: 'Replace HVAC filter' }).first();
