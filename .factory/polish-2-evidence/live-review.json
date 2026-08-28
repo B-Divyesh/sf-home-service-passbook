@@ -1,0 +1,92 @@
+{
+  "bundle": "assets/index-DlW5YI2U.js",
+  "forbidden": [
+    "Household ledger",
+    "Wrong panel",
+    "HOME / 01",
+    "Original generated artwork."
+  ],
+  "absentFromBundle": true,
+  "firstScreen": {
+    "status": 200,
+    "heading": "Remember every home service job",
+    "demoHref": "/?demo=1",
+    "serviceRecord": 1,
+    "footerHasProvenanceClaim": 0
+  },
+  "demo": {
+    "banner": true,
+    "reset": true,
+    "startForReal": true,
+    "sampleJob": true
+  },
+  "app": {
+    "passbookEyebrow": "Passbook",
+    "householdLedgerCount": 0
+  },
+  "routes": [
+    {
+      "path": "/",
+      "titleMatches": true,
+      "canonical": "https://home-service-passbook.sociobot.in/",
+      "oneH1": true,
+      "oneMain": true,
+      "metadata": true
+    },
+    {
+      "path": "/demo",
+      "titleMatches": true,
+      "canonical": "https://home-service-passbook.sociobot.in/demo",
+      "oneH1": true,
+      "oneMain": true,
+      "metadata": true
+    },
+    {
+      "path": "/app",
+      "titleMatches": true,
+      "canonical": "https://home-service-passbook.sociobot.in/app",
+      "oneH1": true,
+      "oneMain": true,
+      "metadata": true
+    },
+    {
+      "path": "/history",
+      "titleMatches": true,
+      "canonical": "https://home-service-passbook.sociobot.in/history",
+      "oneH1": true,
+      "oneMain": true,
+      "metadata": true
+    },
+    {
+      "path": "/backup",
+      "titleMatches": true,
+      "canonical": "https://home-service-passbook.sociobot.in/backup",
+      "oneH1": true,
+      "oneMain": true,
+      "metadata": true
+    },
+    {
+      "path": "/privacy",
+      "titleMatches": true,
+      "canonical": "https://home-service-passbook.sociobot.in/privacy",
+      "oneH1": true,
+      "oneMain": true,
+      "metadata": true
+    },
+    {
+      "path": "/terms",
+      "titleMatches": true,
+      "canonical": "https://home-service-passbook.sociobot.in/terms",
+      "oneH1": true,
+      "oneMain": true,
+      "metadata": true
+    }
+  ],
+  "missing": {
+    "status": 404,
+    "eyebrow": "Page not found",
+    "h1": "This page is not in the passbook",
+    "wrongPanelCount": 0,
+    "provenanceClaimCount": 0
+  }
+}

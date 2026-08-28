@@ -1,25 +1,37 @@
-# Home Service Passbook — review 2 handoff
+# Home Service Passbook — polish 2 handoff
 
-## Status: FAIL
+## Status: PASS
 
-This reviewer made documentation-only changes: `.factory/review-2.md` records the independent second adversarial review. Product code was not modified.
+Polish 2 repairs every finding in `.factory/review-1.md` and `.factory/review-2.md`. The product remains a local-first offline PWA with its mid-century instrument-panel visual system.
 
-## Verification performed
+## Delivered
 
-- Opened the live landing page cold in fresh 390 × 844 and 1440 × 900 Chromium contexts. The first screen clearly identifies the job, audience, and sample action; it had no console errors.
-- Entered the live demo through the visible action. It showed populated sample work, its persistent sandbox banner, reset action, and exit action. A real `Boiler` record survived demo exit while the sample `Furnace` did not cross into real storage. The demo flow made no cross-origin request.
-- Confirmed a service-worker-controlled live `/demo` reload works offline with sample work visible.
-- Cloned the repository into a fresh `/tmp` directory, ran `npm ci`, ran all 14 literal claim commands separately, then ran `npm test` and `npm run build`. All claim tests and the final suite passed; the build created `dist/index.html`.
-- Rechecked the complete set of prior review-1 findings against live output and current code. All F-1 findings are fixed.
-- Checked every application route, titles, metadata, 404 behavior, header/footer, back-button focus/live announcement, sitemap/robots/icons, and internal route responses.
+- Removed the untestable public provenance slogan from both SPA and standalone-404 footers. Generated-art provenance remains documented in `.factory/design.md`.
+- Standardized the stored-document label as **Passbook**; `/app` no longer says “Household ledger.”
+- Replaced the 404’s decorative “Wrong panel” with **Page not found** in both shells.
+- Removed the decorative hero identifier “HOME / 01” and retained the useful **Service record** label.
+- Updated the catalog sentence to: “Record recurring home service jobs and keep proof in a private offline passbook.”
+- Added regression coverage for all four removed/replaced labels and a deployed-site verifier at `scripts/polish-2-live.mjs`.
 
-## Remaining work
+## Verification
 
-Four review findings remain, all documented with exact quotes and fixes in `.factory/review-2.md`:
+- Clean clone: `/tmp/home-service-passbook-clean-sjBD3H` at repair commit `aa60d2ce6c5953e4f313b7f3f5fd07870ee68212` ran `npm ci`, then every one of the 14 literal commands from `.factory/claims.json` separately. All passed.
+- Clean clone full checks: `npm test` passed 18 Vitest tests and 19 Playwright tests; `npm run build` passed and produced `dist/index.html` at `2026-08-28 21:41:24 UTC`.
+- Final workspace regression: `npm test` passed 18 Vitest tests and 19 Playwright tests; `npm run build` passed. The application bundle is 47.48 KB raw / 14.33 KB gzip; CSS is 19.93 KB raw / 5.22 KB gzip; the 640 px hero is 38.85 KB.
+- Static deployment: `/opt/fleet/lib/deploy-static.sh home-service-passbook dist` completed successfully, deployment ID `d619b740-73cc-484f-abc0-ffa6fe4e005e`. The public site serves `assets/index-DlW5YI2U.js`.
+- Live smoke: `npm run verify:live -- https://home-service-passbook.sociobot.in .factory/polish-2-evidence/live-smoke` passed. It found no console errors or cross-origin demo requests, offline reload passed, keyboard skip navigation passed, there was no mobile overflow, all required targets were at least 44 px, checkout returned the expected hosted 303, and all 20 desktop/mobile × light/dark axe scans had zero serious/critical issues.
+- Live review: `node scripts/polish-2-live.mjs` passed. It checked the first screen, direct `/?demo=1` sample path, demo banner/reset/start actions, app eyebrow, all seven SPA metadata routes, and `/missing-polish-2` as HTTP 404. The deployed bundle contains none of “Household ledger,” “Wrong panel,” “HOME / 01,” or “Original generated artwork.”
+- Fresh screenshots: `.factory/polish-2-evidence/live-cold-desktop.png`, `live-cold-mobile.png`, `live-demo-mobile.png`, `live-app-mobile.png`, and `live-404-mobile.png`. The detail record is `.factory/polish-2.md`; machine-readable live results are `live-review.json` and `live-smoke/live-smoke.json`.
 
-1. Remove or make testable the footer claim “Original generated artwork.”
-2. Replace the inconsistent app eyebrow “Household ledger” with the established “passbook” term.
-3. Remove or plainly rename the 404 label “Wrong panel.”
-4. Remove the unexplained landing decoration “HOME / 01.”
+## Run and deploy
 
-After those code/copy changes, rerun the claim commands, full tests/build, and the live browser review. The current verdict remains FAIL until there are zero findings.
+```sh
+npm ci
+npm test
+npm run build
+/opt/fleet/lib/deploy-static.sh home-service-passbook dist
+```
+
+## Known gaps / next steps
+
+None. No review finding remains open.
