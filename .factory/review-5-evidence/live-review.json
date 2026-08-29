@@ -1,0 +1,182 @@
+{
+  "base": "https://home-service-passbook.sociobot.in",
+  "checkedAt": "2026-08-29T00:21:49.358Z",
+  "cold": {
+    "mobile": {
+      "h1": [
+        "Remember every home service job"
+      ],
+      "primary": {
+        "x": 21,
+        "y": 494.625,
+        "width": 348,
+        "height": 50.796875
+      },
+      "firstViewport": "PRIVATE HOME MAINTENANCE PASSBOOK.\n\nRemember every home service job\n\nFor households tracking recurring care, service dates, notes, and receipts without another appliance account.\n\nTry it with sample data\nStart my passbook\n\nThe demo opens with a sample record due next. Starting for real opens your passbook.\n\n● Works offline after the first visit\n● Records stay in this browser\n● Free for five home assets\nService record\n03\nASSETS\n01\nDUE NOW\n04\nSERVICE ENTRIES\n\nSAMPLE SERVICE SCHEDULE\n\nSee what is due and why\n\nEach job keeps its own schedule rule and proof.\n\nUP NEXT\n28 AUG 2026\nOVERDUE\nReplace air filter\n\nFurnace · Utility room\n\nDUE\n14 AUG\n3 months after completion\nNEXT\nVacuum condenser coils\n\nRefrigerator · Kitchen\n\nDUE\n15 SEP\nEvery 6 months\n\nHOW IT WORKS\n\nRecord service history in three steps\n01\nAdd the thing you maintain\n\nName its room, appliance, or outside area.\n\n02\nChoose the repeat rule\n\nUse fixed calendar dates or count from completion.\n\n03\nRecord the work\n\nKeep the date, note, receipt reference, and optional photo.\n\nWHAT THIS PASSBOOK DOES NOT DO\n\nA record, not a repair guide\n\nThis passbook does not control appliances. It does not diagnose faults, certify safety, or file warranty claims. Follow manufacturer guidance and use a",
+      "title": "Home Service Passbook — Track home maintenance",
+      "errors": []
+    },
+    "desktop": {
+      "h1": [
+        "Remember every home service job"
+      ],
+      "primary": {
+        "x": 73,
+        "y": 603.03125,
+        "width": 211.609375,
+        "height": 50.796875
+      },
+      "firstViewport": "PRIVATE HOME MAINTENANCE PASSBOOK.\n\nRemember every home service job\n\nFor households tracking recurring care, service dates, notes, and receipts without another appliance account.\n\nTry it with sample data\nStart my passbook\n\nThe demo opens with a sample record due next. Starting for real opens your passbook.\n\n● Works offline after the first visit\n● Records stay in this browser\n● Free for five home assets\nService record\n03\nASSETS\n01\nDUE NOW\n04\nSERVICE ENTRIES\n\nSAMPLE SERVICE SCHEDULE\n\nSee what is due and why\n\nEach job keeps its own schedule rule and proof.\n\nUP NEXT\n28 AUG 2026\nOVERDUE\nReplace air filter\n\nFurnace · Utility room\n\nDUE\n14 AUG\n3 months after completion\nNEXT\nVacuum condenser coils\n\nRefrigerator · Kitchen\n\nDUE\n15 SEP\nEvery 6 months\n\nHOW IT WORKS\n\nRecord service history in three steps\n01\nAdd the thing you maintain\n\nName its room, appliance, or outside area.\n\n02\nChoose the repeat rule\n\nUse fixed calendar dates or count from completion.\n\n03\nRecord the work\n\nKeep the date, note, receipt reference, and optional photo.\n\nWHAT THIS PASSBOOK DOES NOT DO\n\nA record, not a repair guide\n\nThis passbook does not control appliances. It does not diagnose faults, certify safety, or file warranty claims. Follow manufacturer guidance and use a",
+      "title": "Home Service Passbook — Track home maintenance",
+      "errors": []
+    }
+  },
+  "routes": {
+    "/": {
+      "title": "Home Service Passbook — Track home maintenance",
+      "h1": [
+        "Remember every home service job"
+      ],
+      "mains": 1,
+      "description": "Track recurring home care and keep service proof in one private, offline passbook.",
+      "canonical": "https://home-service-passbook.sociobot.in/",
+      "og": "Home Service Passbook — Track home maintenance"
+    },
+    "/demo": {
+      "title": "Demo — Home Service Passbook",
+      "h1": [
+        "What needs care next"
+      ],
+      "mains": 1,
+      "description": "Try a filled Home Service Passbook with isolated sample records.",
+      "canonical": "https://home-service-passbook.sociobot.in/demo",
+      "og": "Demo — Home Service Passbook"
+    },
+    "/app": {
+      "title": "Your passbook — Home Service Passbook",
+      "h1": [
+        "What needs care next"
+      ],
+      "mains": 1,
+      "description": "View due home service jobs and record completed work in your private passbook.",
+      "canonical": "https://home-service-passbook.sociobot.in/app",
+      "og": "Your passbook — Home Service Passbook"
+    },
+    "/history": {
+      "title": "Service history — Home Service Passbook",
+      "h1": [
+        "Service history"
+      ],
+      "mains": 1,
+      "description": "Review and print the service entries saved in this browser.",
+      "canonical": "https://home-service-passbook.sociobot.in/history",
+      "og": "Service history — Home Service Passbook"
+    },
+    "/backup": {
+      "title": "Backup — Home Service Passbook",
+      "h1": [
+        "Backup and move records"
+      ],
+      "mains": 1,
+      "description": "Export or import a complete Home Service Passbook backup.",
+      "canonical": "https://home-service-passbook.sociobot.in/backup",
+      "og": "Backup — Home Service Passbook"
+    },
+    "/privacy": {
+      "title": "Privacy — Home Service Passbook",
+      "h1": [
+        "Your records stay under your control"
+      ],
+      "mains": 1,
+      "description": "Read how Home Service Passbook stores records and handles license checks.",
+      "canonical": "https://home-service-passbook.sociobot.in/privacy",
+      "og": "Privacy — Home Service Passbook"
+    },
+    "/terms": {
+      "title": "Terms — Home Service Passbook",
+      "h1": [
+        "Use this passbook as a record"
+      ],
+      "mains": 1,
+      "description": "Read the terms for using Home Service Passbook and House Key.",
+      "canonical": "https://home-service-passbook.sociobot.in/terms",
+      "og": "Terms — Home Service Passbook"
+    },
+    "/review-5-not-found": {
+      "status": 404,
+      "title": "Page not found — Home Service Passbook",
+      "h1": [
+        "This page is not in the passbook"
+      ],
+      "main": 1,
+      "homeLinks": 2
+    }
+  },
+  "demo": {
+    "initial": {
+      "url": "https://home-service-passbook.sociobot.in/?demo=1",
+      "text": "PASSBOOK\n\nWhat needs care next\n03\nASSETS\n01\nOVERDUE\nDue next\nAssets\nHistory\nBackup\nHouse Key\n\nORDERED BY DUE DATE\n\n3 recurring jobs\n\nExport calendar (.ics)\nRecord completed work\n\nSAMPLE RECORD\n\nOVERDUE\nReplace air filter\n\nFurnace · Utility room\n\nDUE\nAug 14, 2026\nLAST PROOF\nPack 2 of 4\nOVERDUE\nReplace air filter\n\nFurnace · Utility room\n\nRepeat after completion 3 months · Last done May 14, 2026\nEdit job\nDelete job\nDUE\nAug 14, 2026\nRecord work\nDUE SOON\nVacuum condenser coils\n\nRefrigerator · Kitchen\n\nRepeat every 6 months · Last done Mar 16, 2026\nEdit job\nDelete job\nDUE\nSep 15, 2026\nRecord work\nSCHEDULED\nClear leaves from gutters\n\nRain gutters · Outside\n\nRepeat every 6 months · Last done Apr 6, 2026\nEdit job\nDelete job\nDUE\nOct 1, 2026\nRecord work",
+      "row": {
+        "x": 41,
+        "y": 398,
+        "width": 308,
+        "height": 23.3125
+      },
+      "banner": 1,
+      "dbs": [
+        "demo:home-service-passbook"
+      ],
+      "requests": [
+        "https://home-service-passbook.sociobot.in/?demo=1",
+        "https://home-service-passbook.sociobot.in/assets/index-mGeeg66v.js",
+        "https://home-service-passbook.sociobot.in/assets/index-BwHBAYDQ.css"
+      ]
+    },
+    "reset": {
+      "row": null,
+      "hasSample": 1
+    },
+    "afterLeaving": {
+      "url": "https://home-service-passbook.sociobot.in/?demo=1",
+      "banner": 1,
+      "dbs": [
+        "demo:home-service-passbook"
+      ]
+    }
+  },
+  "links": [
+    {
+      "href": "https://home-service-passbook.sociobot.in/#main",
+      "status": 200
+    },
+    {
+      "href": "https://home-service-passbook.sociobot.in/",
+      "status": 200
+    },
+    {
+      "href": "https://home-service-passbook.sociobot.in/demo",
+      "status": 200
+    },
+    {
+      "href": "https://home-service-passbook.sociobot.in/app",
+      "status": 200
+    },
+    {
+      "href": "https://home-service-passbook.sociobot.in/privacy",
+      "status": 200
+    },
+    {
+      "href": "https://home-service-passbook.sociobot.in/?demo=1",
+      "status": 200
+    },
+    {
+      "href": "https://home-service-passbook.sociobot.in/app?panel=license",
+      "status": 200
+    },
+    {
+      "href": "https://home-service-passbook.sociobot.in/terms",
+      "status": 200
+    }
+  ],
+  "errors": []
+}

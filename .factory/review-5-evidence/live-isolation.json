@@ -1,0 +1,11 @@
+{
+  "demoSample": true,
+  "afterResetSample": true,
+  "realSurvives": true,
+  "sampleAbsent": true,
+  "dbs": [
+    "demo:home-service-passbook",
+    "home-service-passbook"
+  ],
+  "url": "https://home-service-passbook.sociobot.in/app?panel=assets"
+}
